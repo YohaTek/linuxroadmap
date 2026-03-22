@@ -3,8 +3,8 @@ window.DB = (() => {
   // 🔴 IMPORTANT: SUPABASE CONFIGURATION
   // ==========================================
   // Replace these with your project credentials from supabase.com
-  const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-  const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+  const SUPABASE_URL = 'https://ymsbmubjiblqzyfagyhf.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inltc2JtdWJqaWJscXp5ZmFneWhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTU0NDMsImV4cCI6MjA4OTc5MTQ0M30.kaZCzey9la1pJifIGNd5S2feIulIipwiKqW38TTfsoI';
   // ==========================================
 
   const isConfigured = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_URL.startsWith('http');
