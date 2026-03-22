@@ -1,0 +1,149 @@
+<h1>2. Super User & File Operations</h1>
+<p class="muted">Understanding permissions, ownership, and the power of sudo.</p>
+
+<div class="section-concept">
+  <h2>1. Concept Overview</h2>
+  <p>
+    Linux is a multi-user system by design. To protect the system from accidental (or malicious) damage, regular users
+    have limited access. They can only modify files in their own home directory.
+  </p>
+  <p>
+    The <strong>Super User</strong> (often named <code>root</code>) has unrestricted access to the entire system. To
+    perform administrative tasks (like installing software or editing system configs), you must temporarily elevate your
+    privileges using <code>sudo</code> (SuperUser DO).
+  </p>
+</div>
+
+<div class="section-commands">
+  <h2>2. Key Commands</h2>
+  <div class="card">
+    <strong>sudo (Execute as Root)</strong>
+    <p>Run a command with elevated privileges.</p>
+    <pre data-code="sudo apt update   # Run update as root
+sudo -i           # Start a root shell (be careful!)
+sudo !!           # 'I forgot sudo' (runs last command with sudo)"></pre>
+  </div>
+  <div class="card">
+    <strong>chmod (Change Mode)</strong>
+    <p>Change file permissions (Read, Write, Execute).</p>
+    <pre data-code="chmod +x script.sh       # Make executable
+chmod 644 file.txt       # Standard file perms (rw-r--r--)
+chmod 755 app            # Standard executable perms (rwxr-xr-x)
+chmod -R 755 dir/        # Recursive"></pre>
+  </div>
+  <div class="card">
+    <strong>chown (Change Owner)</strong>
+    <p>Change who owns a file.</p>
+    <pre data-code="chown user file.txt          # Change owner
+chown user:group file.txt    # Change owner and group
+chown -R user:group dir/     # Recursive"></pre>
+  </div>
+  <div class="card">
+    <strong>tar (Tape Archive)</strong>
+    <p>Compress and archive files.</p>
+    <pre data-code="tar -czf archive.tar.gz dir/  # Create (Compress)
+tar -xzf archive.tar.gz       # Extract (Uncompress)
+tar -tf archive.tar.gz        # List contents"></pre>
+  </div>
+</div>
+
+<div class="section-scenarios">
+  <h2>3. Real-World Scenarios</h2>
+
+  <h3>Scenario A: "Permission Denied"</h3>
+  <p>You try to edit a config file and get an error.</p>
+  <pre data-code="nano /etc/hosts           # Fails: Permission denied
+sudo nano /etc/hosts      # Success! Enter password."></pre>
+
+  <h3>Scenario B: "Fixing Web Server Permissions"</h3>
+  <p>You uploaded files to <code>/var/www/html</code> but the web server can't read them.</p>
+  <pre data-code="sudo chown -R www-data:www-data /var/www/html
+sudo chmod -R 755 /var/www/html"></pre>
+</div>
+
+<div class="section-deep-dive">
+  <h2>4. Deep Dive: Octal Permissions</h2>
+  <p>
+    Permissions are often represented by 3 numbers (e.g., <code>755</code>). Each number represents the sum of
+    permissions for <strong>User</strong>, <strong>Group</strong>, and <strong>Others</strong>.
+  </p>
+  <ul>
+    <li><strong>Read (r)</strong> = 4</li>
+    <li><strong>Write (w)</strong> = 2</li>
+    <li><strong>Execute (x)</strong> = 1</li>
+  </ul>
+  <p>
+    So, <strong>7</strong> = 4+2+1 (Read+Write+Execute). <strong>5</strong> = 4+1 (Read+Execute).<br>
+    <code>chmod 755</code> means: User gets everything (7), Group gets Read+Exec (5), Others get Read+Exec (5).
+  </p>
+</div>
+
+<div class="section-pitfalls">
+  <h2>5. Common Pitfalls</h2>
+  <ul>
+    <li><strong>Running everything as root:</strong> Don't log in as root or use <code>sudo</code> for everything. It's
+      a security risk.</li>
+    <li><strong>chmod 777:</strong> Never set permissions to 777 (everyone can write) unless you absolutely know what
+      you are doing. It's a major security hole.</li>
+    <li><strong>Recursive chown/chmod:</strong> Be very careful with <code>-R</code>. Running
+      <code>sudo chown -R user /</code> can destroy your system.</li>
+  </ul>
+</div>
+
+<div class="section-exercises">
+  <h2>6. Exercises</h2>
+  <p>These are common “day 1” admin tasks, including ones you’ll use in network engineering (editing configs, securing keys).</p>
+  <ol>
+    <li><strong>Fix permissions:</strong> Create a file <code>secret.txt</code> and set permissions so only you can read/write it (no access for group/others).</li>
+    <li><strong>Make a script executable:</strong> Create <code>hello.sh</code> that prints “hello”, then make it executable and run it with <code>./hello.sh</code>.</li>
+    <li><strong>Change ownership:</strong> Create a directory <code>share</code> and change its group to a group you belong to.</li>
+    <li><strong>Safely edit a system file:</strong> View <code>/etc/hosts</code> with and without <code>sudo</code> and explain what changed.</li>
+    <li><strong>Archive configs:</strong> Create an archive of <code>/etc/ssh</code> (or any small config directory) and list its contents without extracting.</li>
+    <li><strong>Grant group permissions:</strong> Add write permissions to the group for the <code>share</code> directory recursively.</li>
+    <li><strong>Extract specific file:</strong> Create a compressed archive, then extract only one specific file from it instead of the entire archive.</li>
+    <li><strong>Identify root processes:</strong> Use <code>sudo</code> with process listing commands to see system-level processes that a normal user can't fully inspect.</li>
+  </ol>
+</div>
+
+<div class="section-answers">
+  <h2>7. Answers</h2>
+  <pre data-code="# Exercise 1: Fix permissions
+touch secret.txt
+chmod 600 secret.txt      # rw------- (only owner can read/write)
+ls -l secret.txt
+
+# Exercise 2: Make a script executable
+printf '#!/usr/bin/env bash\necho hello\n' > hello.sh
+chmod +x hello.sh
+./hello.sh
+
+# Exercise 3: Change ownership
+mkdir -p share
+id -nG                   # list your groups (pick one)
+sudo chgrp -R &quot;$(id -nG | awk '{print $1}')&quot; share
+ls -ld share
+
+# Exercise 4: Safely edit a system file
+cat /etc/hosts
+sudo cat /etc/hosts
+# Reading may work without sudo on many distros; editing needs sudo:
+sudo nano /etc/hosts
+
+# Exercise 5: Archive configs
+sudo tar -czf ssh-configs.tar.gz /etc/ssh
+tar -tf ssh-configs.tar.gz | head
+
+# Exercise 6: Grant group permissions
+chmod -R g+w share/
+ls -ld share/
+
+# Exercise 7: Extract specific file
+touch file1.txt file2.txt
+tar -czf files.tar.gz file1.txt file2.txt
+tar -xzf files.tar.gz file1.txt  # Extracts ONLY file1.txt
+
+# Exercise 8: Identify root processes
+ps aux | head
+sudo ps aux | head  # Notice more details for restricted processes!"></pre>
+</div>
+

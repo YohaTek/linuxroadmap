@@ -1,0 +1,139 @@
+<h1>6. User & Group Management</h1>
+<p class="muted">Managing identities, passwords, and access control.</p>
+
+<div class="section-concept">
+  <h2>1. Concept Overview</h2>
+  <p>
+    Linux identities are defined by files, not a database.
+  </p>
+  <ul>
+    <li><code>/etc/passwd</code>: Stores user info (Username, UID, Home Dir, Shell).</li>
+    <li><code>/etc/shadow</code>: Stores encrypted passwords (secure).</li>
+    <li><code>/etc/group</code>: Stores group memberships.</li>
+  </ul>
+  <p>
+    <strong>UID (User ID)</strong> is the number the kernel cares about. Root is always UID 0. Regular users usually
+    start at 1000.
+  </p>
+</div>
+
+<div class="section-commands">
+  <h2>2. Key Commands</h2>
+  <div class="card">
+    <strong>useradd / userdel</strong>
+    <p>Create/Delete users.</p>
+    <pre data-code="sudo useradd -m alice     # Create user 'alice' with home dir
+sudo passwd alice         # Set password for alice
+sudo userdel -r alice     # Delete alice and her home dir"></pre>
+  </div>
+  <div class="card">
+    <strong>usermod</strong>
+    <p>Modify user accounts.</p>
+    <pre data-code="sudo usermod -aG sudo alice  # Add alice to 'sudo' group
+sudo usermod -s /bin/bash alice # Change shell to bash"></pre>
+  </div>
+  <div class="card">
+    <strong>groupadd / gpasswd</strong>
+    <p>Manage groups.</p>
+    <pre data-code="sudo groupadd developers
+sudo gpasswd -a alice developers # Add user to group"></pre>
+  </div>
+  <div class="card">
+    <strong>id / whoami</strong>
+    <p>Check identity.</p>
+    <pre data-code="id alice       # Show UID, GID, and groups for alice
+whoami         # Show current username"></pre>
+  </div>
+</div>
+
+<div class="section-scenarios">
+  <h2>3. Real-World Scenarios</h2>
+
+  <h3>Scenario A: "Granting sudo access"</h3>
+  <p>You created a new user, but they can't run admin commands.</p>
+  <pre data-code="sudo usermod -aG sudo bob
+# Bob must log out and log back in for group changes to take effect!"></pre>
+
+  <h3>Scenario B: "Locking an account"</h3>
+  <p>An employee left the company. Lock their access without deleting files.</p>
+  <pre data-code="sudo passwd -l bob        # Lock password
+sudo usermod -L bob       # Lock account (alternative)"></pre>
+</div>
+
+<div class="section-deep-dive">
+  <h2>4. Deep Dive: /etc/passwd</h2>
+  <p>
+    A line in <code>/etc/passwd</code> looks like this:
+    <br><code>root:x:0:0:root:/root:/bin/bash</code>
+  </p>
+  <ol>
+    <li><strong>root:</strong> Username</li>
+    <li><strong>x:</strong> Password placeholder (real hash is in /etc/shadow)</li>
+    <li><strong>0:</strong> User ID (UID)</li>
+    <li><strong>0:</strong> Group ID (GID)</li>
+    <li><strong>root:</strong> Comment (GECOS)</li>
+    <li><strong>/root:</strong> Home Directory</li>
+    <li><strong>/bin/bash:</strong> Default Shell</li>
+  </ol>
+</div>
+
+<div class="section-pitfalls">
+  <h2>5. Common Pitfalls</h2>
+  <ul>
+    <li><strong>Forgetting <code>-m</code>:</strong> <code>useradd bob</code> (without -m) creates a user
+      <strong>without</strong> a home directory. Bob will be homeless and sad.</li>
+    <li><strong>Editing /etc/passwd manually:</strong> Dangerous! A typo can lock everyone out. Use <code>vipw</code> if
+      you must, but stick to <code>usermod</code> commands.</li>
+  </ul>
+</div>
+
+<div class="section-exercises">
+  <h2>6. Exercises</h2>
+  <p>Identity mistakes cause outages and security incidents. These drills mirror real admin tasks (including access for network tooling).</p>
+  <ol>
+    <li><strong>Create a user:</strong> Create user <code>netops</code> with a home directory and set a password.</li>
+    <li><strong>Create a group:</strong> Create group <code>neteng</code> and add <code>netops</code> to it.</li>
+    <li><strong>Restrict shell access:</strong> Change <code>netops</code> shell to <code>/usr/sbin/nologin</code> (useful for service accounts).</li>
+    <li><strong>Audit memberships:</strong> Show which groups your current user belongs to, then show groups for <code>netops</code>.</li>
+    <li><strong>Lock without deleting:</strong> Lock the <code>netops</code> account without deleting files, then unlock it.</li>
+    <li><strong>Find files by owner:</strong> Find all files in <code>/tmp</code> (or <code>/var</code>) owned by root.</li>
+    <li><strong>Modify GECOS field:</strong> Change the full name and room number metadata for the user <code>netops</code>.</li>
+    <li><strong>Check user login history:</strong> Check the last time any user (or a specific user) logged into the system.</li>
+  </ol>
+</div>
+
+<div class="section-answers">
+  <h2>7. Answers</h2>
+  <pre data-code="# Exercise 1: Create a user
+sudo useradd -m netops
+sudo passwd netops
+
+# Exercise 2: Create a group
+sudo groupadd neteng
+sudo usermod -aG neteng netops
+
+# Exercise 3: Restrict shell access
+sudo usermod -s /usr/sbin/nologin netops
+getent passwd netops
+
+# Exercise 4: Audit memberships
+groups
+id netops
+
+# Exercise 5: Lock without deleting
+sudo passwd -l netops     # lock
+sudo passwd -u netops     # unlock
+
+# Exercise 6: Find files by owner
+sudo find /tmp -user root -type f
+
+# Exercise 7: Modify GECOS field
+sudo usermod -c "Network Operations, Room 101" netops
+grep netops /etc/passwd
+
+# Exercise 8: Check user login history
+last
+# or: last netops"></pre>
+</div>
+</div>
+

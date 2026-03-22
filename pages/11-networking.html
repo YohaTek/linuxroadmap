@@ -1,0 +1,477 @@
+<h1>11. Networking</h1>
+<p class="muted">IPs, DNS, Ports, and troubleshooting connectivity.</p>
+
+<div class="section-concept">
+  <h2>1. Concept Overview</h2>
+  <p>
+    Linux networking is built on the TCP/IP stack. Every interface (like <code>eth0</code> or <code>wlan0</code>) has an
+    IP address.
+  </p>
+  <p>
+    To talk to other computers, you need:
+    <br>1. <strong>IP Address:</strong> Your identity.
+    <br>2. <strong>Netmask:</strong> Defines your local network size.
+    <br>3. <strong>Gateway:</strong> The router that connects you to the internet.
+    <br>4. <strong>DNS:</strong> Translates "google.com" to an IP.
+  </p>
+</div>
+
+<div class="section-commands">
+  <h2>2. Key Commands</h2>
+  
+  <div class="card">
+    <strong>ip (The new standard)</strong>
+    <p>Replace ifconfig/route.</p>
+    <pre data-code="ip a              # Show Addresses (ip addr)
+ip r              # Show Routes (ip route)
+ip n              # Show Neighbors (ARP table)"></pre>
+  </div>
+  
+  <div class="card">
+    <strong>ss (Socket Stats)</strong>
+    <p>See who is listening.</p>
+    <pre data-code="ss -tulpn         # Show TCP/UDP listening ports
+# -t: TCP, -u: UDP, -l: Listening
+# -p: Process name, -n: Numeric ports"></pre>
+  </div>
+  
+  <div class="card">
+    <strong>ping & traceroute</strong>
+    <p>Test connectivity.</p>
+    <pre data-code="ping -c 4 8.8.8.8      # Check internet connection
+traceroute google.com  # Trace path to host"></pre>
+  </div>
+  
+  <div class="card">
+    <strong>curl</strong>
+    <p>Transfer data.</p>
+    <pre data-code="curl -I google.com     # Fetch headers only
+curl -O url/file.zip   # Download file"></pre>
+  </div>
+</div>
+
+<div class="section-scenarios">
+  <h2>3. Real-World Scenarios</h2>
+
+  <h3>Scenario A: "I have no internet"</h3>
+  <p>Troubleshoot step-by-step.</p>
+  <pre data-code="# 1. Can I ping myself?
+ping 127.0.0.1
+# 2. Can I ping my gateway? (Find it with 'ip r')
+ping 192.168.1.1
+# 3. Can I ping Google IP?
+ping 8.8.8.8
+# 4. Can I ping Google Domain? (DNS check)
+ping google.com"></pre>
+
+  <h3>Scenario B: "What is running on port 80?"</h3>
+  <p>Something is blocking your web server.</p>
+  <pre data-code="sudo ss -tulpn | grep :80
+# Output: tcp LISTEN ... users:((" apache2",pid=123,fd=4)) # Ah, Apache is already running!"></pre>
+</div>
+
+<div class="section-deep-dive">
+  <h2>4. Deep Dive: DNS Resolution</h2>
+  <p>
+    When you ping <code>google.com</code>, Linux checks:
+    <br>1. <code>/etc/hosts</code>: Local overrides (static mapping).
+    <br>2. <code>/etc/resolv.conf</code>: Lists your DNS servers (nameservers).
+  </p>
+  <p>
+    Use <code>dig google.com</code> to debug DNS queries specifically.
+  </p>
+</div>
+
+<div class="section-lab">
+  <h2>5. Configuring a Small Network</h2>
+  <p>
+    A typical home/small-office network has:
+    <br>• End devices (PCs, servers) on a LAN, e.g. <code>192.168.1.0/24</code>
+    <br>• A switch connecting devices together
+    <br>• A router with two interfaces (LAN + WAN/Internet)
+    <br>• A DHCP/DNS service handing out IPs and names
+  </p>
+
+  <h3>A. Configure a Linux end device (static IP)</h3>
+  <p>On a server without NetworkManager, you can set a temporary IP with <code>ip</code>:</p>
+  <pre data-code="sudo ip addr add 192.168.1.10/24 dev eth0
+sudo ip route add default via 192.168.1.1
+# Check:
+ip a
+ip r
+ping 192.168.1.1
+ping 8.8.8.8"></pre>
+  <p>This only lasts until reboot. On modern desktops with NetworkManager, prefer <code>nmcli</code>:</p>
+  <pre data-code="nmcli device status              # See devices (e.g. eth0)
+nmcli con show                   # List connections
+sudo nmcli con mod &quot;Wired connection 1&quot; \
+  ipv4.method manual \
+  ipv4.addresses 192.168.1.10/24 \
+  ipv4.gateway 192.168.1.1 \
+  ipv4.dns &quot;1.1.1.1 8.8.8.8&quot;
+sudo nmcli con up &quot;Wired connection 1&quot;"></pre>
+
+  <h3>B. Configure a Linux DHCP server</h3>
+  <p>
+    One lightweight option is <code>dnsmasq</code>, which can provide both DHCP and DNS caching.
+    Example for interface <code>eth1</code> facing your LAN:
+  </p>
+  <pre data-code="sudo apt install dnsmasq
+sudo tee /etc/dnsmasq.d/lan.conf &lt;&lt;'EOF'
+interface=eth1            # LAN interface
+dhcp-range=192.168.1.50,192.168.1.150,12h
+dhcp-option=3,192.168.1.1 # Default gateway
+dhcp-option=6,1.1.1.1,8.8.8.8 # DNS servers
+EOF
+
+sudo systemctl restart dnsmasq
+sudo journalctl -u dnsmasq -f"></pre>
+  <p>Clients on the LAN that are set to use &quot;Automatic (DHCP)&quot; will now receive an IP, gateway, and DNS.</p>
+
+  <h3>C. Configure DNS on clients</h3>
+  <p>
+    Clients usually learn DNS from DHCP, but you can override it on Linux temporarily:
+  </p>
+  <pre data-code="cat /etc/resolv.conf           # See current DNS
+sudo sed -i '1inameserver 1.1.1.1' /etc/resolv.conf
+dig example.com
+ping example.com"></pre>
+  <p>
+    On NetworkManager systems, use <code>nmcli</code> instead of editing <code>/etc/resolv.conf</code> directly (it is auto-managed).
+  </p>
+
+  <h3>D. Basic Linux router setup</h3>
+  <p>
+    To turn a Linux box into a simple router between WAN (<code>eth0</code>) and LAN (<code>eth1</code>):
+  </p>
+  <pre data-code="# 1. Give LAN interface a static IP
+sudo ip addr add 192.168.1.1/24 dev eth1
+
+# 2. Enable IP forwarding (routing)
+echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward
+sudo sed -i 's/^#\?net.ipv4.ip_forward.*/net.ipv4.ip_forward=1/' /etc/sysctl.conf
+sudo sysctl -p
+
+# 3. Add masquerading (NAT) so LAN can reach the internet via eth0
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+sudo iptables-save | sudo tee /etc/iptables.rules"></pre>
+  <p>
+    After this, devices on <code>192.168.1.0/24</code> that use <code>192.168.1.1</code> as their gateway (via DHCP or static config)
+    should reach the internet, assuming <code>eth0</code> already has working connectivity.
+  </p>
+
+  <h3>E. Switches and VLAN basics</h3>
+  <p>
+    Managed switches let you segment a network into VLANs (e.g. VLAN 10 for servers, VLAN 20 for guests). On Linux, you
+    can tag VLANs on a trunk port like this:
+  </p>
+  <pre data-code="sudo ip link add link eth1 name eth1.10 type vlan id 10
+sudo ip addr add 192.168.10.1/24 dev eth1.10
+sudo ip link set eth1.10 up
+
+sudo ip link add link eth1 name eth1.20 type vlan id 20
+sudo ip addr add 192.168.20.1/24 dev eth1.20
+sudo ip link set eth1.20 up"></pre>
+  <p>
+    The physical switch port connected to <code>eth1</code> must be configured as a tagged/trunk port carrying VLANs 10 and 20,
+    while access ports on the switch place end devices into one VLAN or the other.
+  </p>
+</div>
+
+<div class="section-advanced-lab-overview">
+  <h2>6. Advanced Lab Topologies</h2>
+  <p>
+    Once you are comfortable with single-router home/small-office networks, you can practice more advanced topologies:
+    <br>• Multi-router setups with static routing between LANs
+    <br>• Inter-VLAN routing (router-on-a-stick) with a managed switch
+    <br>• Redundant DNS/DHCP for higher availability
+  </p>
+  <p>
+    These labs work great in a virtual environment (multiple Linux VMs + internal networks) or in a small physical lab.
+  </p>
+</div>
+
+<div class="section-advanced-multi-router">
+  <h2>7. Multi-Router Lab (Static Routing)</h2>
+  <p>
+    Topology:
+    <br>• <strong>R1</strong> (Linux router) connects LAN1 <code>192.168.10.0/24</code> to transit <code>10.0.0.0/30</code>
+    <br>• <strong>R2</strong> (Linux router) connects LAN2 <code>192.168.20.0/24</code> to transit <code>10.0.0.0/30</code>
+    <br>• Goal: Hosts on 192.168.10.0/24 can ping hosts on 192.168.20.0/24 through R1↔R2
+  </p>
+  <p>On <strong>R1</strong>:</p>
+  <pre data-code="# Interfaces:
+# eth0: LAN1
+# eth1: transit link to R2
+
+sudo ip addr add 192.168.10.1/24 dev eth0
+sudo ip addr add 10.0.0.1/30 dev eth1
+
+echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward
+
+# Route to LAN2 via R2
+sudo ip route add 192.168.20.0/24 via 10.0.0.2 dev eth1
+
+ip r"></pre>
+
+  <p>On <strong>R2</strong>:</p>
+  <pre data-code="# Interfaces:
+# eth0: LAN2
+# eth1: transit link to R1
+
+sudo ip addr add 192.168.20.1/24 dev eth0
+sudo ip addr add 10.0.0.2/30 dev eth1
+
+echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward
+
+# Route to LAN1 via R1
+sudo ip route add 192.168.10.0/24 via 10.0.0.1 dev eth1
+
+ip r"></pre>
+
+  <p>On a host in LAN1 (e.g. 192.168.10.10):</p>
+  <pre data-code="sudo ip addr add 192.168.10.10/24 dev eth0
+sudo ip route add default via 192.168.10.1
+
+ping 192.168.10.1      # R1 LAN IP
+ping 10.0.0.2          # R2 transit IP
+ping 192.168.20.1      # R2 LAN IP
+ping 192.168.20.10     # Host on LAN2 (once configured)"></pre>
+
+  <p>
+    Repeat for a host in LAN2 with gateway 192.168.20.1. If pings fail, use <code>traceroute</code> on each hop to see where
+    the traffic stops.
+  </p>
+</div>
+
+<div class="section-advanced-vlan">
+  <h2>8. Inter-VLAN Routing (Router-on-a-Stick)</h2>
+  <p>
+    Scenario:
+    <br>• You have a managed switch with VLAN 10 (Servers) and VLAN 20 (Clients)
+    <br>• A single Linux router connects to the switch via port <code>eth1</code>, configured as a trunk (carrying VLAN tags)
+    <br>• Goal: Devices in VLAN 10 and VLAN 20 can talk to each other through the Linux router
+  </p>
+
+  <h3>Linux router configuration</h3>
+  <pre data-code="# Create VLAN subinterfaces
+sudo ip link add link eth1 name eth1.10 type vlan id 10
+sudo ip link add link eth1 name eth1.20 type vlan id 20
+
+sudo ip addr add 192.168.10.1/24 dev eth1.10
+sudo ip addr add 192.168.20.1/24 dev eth1.20
+
+sudo ip link set eth1 up
+sudo ip link set eth1.10 up
+sudo ip link set eth1.20 up
+
+echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward"></pre>
+
+  <p>
+    On the switch:
+    <br>• Configure the port facing <code>eth1</code> as a trunk/tagged port for VLANs 10 and 20
+    <br>• Configure access ports for servers in VLAN 10 and clients in VLAN 20
+  </p>
+
+  <p>
+    Test from a server in VLAN 10:
+  </p>
+  <pre data-code="# On server (access port VLAN 10)
+sudo ip addr add 192.168.10.50/24 dev eth0
+sudo ip route add default via 192.168.10.1
+
+ping 192.168.10.1      # Router VLAN 10 SVI
+ping 192.168.20.1      # Router VLAN 20 SVI
+ping 192.168.20.60     # Client in VLAN 20 (once configured)"></pre>
+</div>
+
+<div class="section-advanced-dhcp-dns">
+  <h2>9. Redundant DNS/DHCP Design</h2>
+  <p>
+    On small networks, a single DHCP/DNS server is common, but it is a single point of failure. For higher resilience:
+    <br>• Run two <code>dnsmasq</code> instances (or two servers) with non-overlapping pools
+    <br>• Point clients (via DHCP option 6) to multiple DNS servers (e.g. local + public)
+  </p>
+
+  <h3>Example: two DHCP servers on the same LAN</h3>
+  <p>On <strong>Server A</strong>:</p>
+  <pre data-code="sudo tee /etc/dnsmasq.d/lan-a.conf &lt;&lt;'EOF'
+interface=eth0
+dhcp-range=192.168.50.50,192.168.50.100,12h
+dhcp-option=3,192.168.50.1
+dhcp-option=6,192.168.50.2,1.1.1.1
+EOF
+sudo systemctl restart dnsmasq"></pre>
+
+  <p>On <strong>Server B</strong>:</p>
+  <pre data-code="sudo tee /etc/dnsmasq.d/lan-b.conf &lt;&lt;'EOF'
+interface=eth0
+dhcp-range=192.168.50.150,192.168.50.200,12h
+dhcp-option=3,192.168.50.1
+dhcp-option=6,192.168.50.3,8.8.8.8
+EOF
+sudo systemctl restart dnsmasq"></pre>
+
+  <p>
+    Both A and B can run DNS; clients will use whichever assigned DNS address answers fastest or is reachable. Be careful
+    not to overlap DHCP ranges to avoid duplicate leases.
+  </p>
+</div>
+
+<div class="section-advanced-packet-analysis">
+  <h2>10. Packet Analysis & Sniffing</h2>
+  <p>To diagnose deep network issues, you need to see the actual traffic on the wire using tools like <code>tcpdump</code> or Wireshark.</p>
+  <pre data-code="sudo tcpdump -i eth0            # Sniff all traffic on eth0
+sudo tcpdump -n -i any port 80  # Sniff HTTP traffic on all interfaces
+sudo tcpdump -w capture.pcap    # Save to file for Wireshark"></pre>
+</div>
+
+<div class="section-advanced-firewalls">
+  <h2>11. Firewalls and Security</h2>
+  <p>Linux uses Netfilter in the kernel. You can manage it via <code>iptables</code>, <code>nftables</code>, or user-friendly wrappers like <code>ufw</code>.</p>
+  <pre data-code="sudo ufw status                 # Check firewall status
+sudo ufw allow 22/tcp           # Allow SSH
+sudo ufw enable                 # Turn firewall on
+sudo iptables -L -v -n          # View low-level netfilter rules"></pre>
+</div>
+
+<div class="section-advanced-vpns">
+  <h2>12. VPNs and Tunneling</h2>
+  <p>VPNs securely bridge networks over the internet. <strong>WireGuard</strong> is the modern standard, baked into the Linux kernel.</p>
+  <pre data-code="wg genkey | tee privatekey | wg pubkey > publickey  # Generate keys
+# A WireGuard interface (wg0) acts like a virtual eth0.
+sudo wg show                    # Show current VPN status"></pre>
+</div>
+
+<div class="section-advanced-dynamic-routing">
+  <h2>13. Dynamic Routing</h2>
+  <p>Unlike static routes, protocols like <strong>OSPF</strong> (internal) and <strong>BGP</strong> (internet) automatically discover paths. <strong>FRRouting (FRR)</strong> is the leading Linux routing suite.</p>
+  <pre data-code="sudo vtysh                      # Enter FRR routing shell
+# conf t
+# router bgp 65000
+# neighbor 10.0.0.1 remote-as 65001"></pre>
+</div>
+
+<div class="section-advanced-namespaces">
+  <h2>14. Network Namespaces</h2>
+  <p>This is how Docker isolates containers. A namespace is a completely separate network stack (interfaces, routing tables) on the same machine.</p>
+  <pre data-code="sudo ip netns add isolated      # Create a new namespace
+sudo ip netns exec isolated ip a # Run command INSIDE the namespace"></pre>
+</div>
+
+<div class="section-advanced-load-balancing">
+  <h2>15. Load Balancing & High Availability</h2>
+  <p>Distribute traffic across servers using HAProxy/Nginx (Load Balancing) and ensure uptime with Keepalived (VRRP VIP failover).</p>
+  <pre data-code="# Example Nginx Upstream:
+# upstream backend {
+#   server 10.0.0.1;
+#   server 10.0.0.2;
+# }"></pre>
+</div>
+
+<div class="section-pitfalls">
+  <h2>16. Common Pitfalls</h2>
+  <ul>
+    <li><strong>Firewalls:</strong> If you can't connect to a server, check if the firewall is blocking it
+      (<code>sudo ufw status</code> or <code>iptables -L</code>).</li>
+    <li><strong>ifconfig vs ip:</strong> <code>ifconfig</code> is deprecated. Learn <code>ip</code> commands.</li>
+    <li><strong>Asymmetric routing:</strong> Packets go out one path and return another. Use <code>traceroute</code> from both
+      directions and verify routes on every router.</li>
+    <li><strong>Firewall between segments:</strong> Each Linux router may have <code>iptables</code> or <code>nftables</code> rules
+      blocking forwarding. Temporarily disable or add explicit <code>ACCEPT</code> rules on <code>FORWARD</code>.</li>
+    <li><strong>Wrong VLAN tagging:</strong> If one side of a link is trunk/tagged and the other is access/untagged, traffic
+      will disappear. Always check switch port mode vs Linux VLAN config.</li>
+    <li><strong>Duplicate subnets:</strong> Using the same subnet on multiple interfaces/segments is a classic source of
+      confusion. Ensure each link/LAN has a unique network.</li>
+  </ul>
+</div>
+
+<div class="section-exercises">
+  <h2>17. Exercises</h2>
+  <p>These are the same tasks you’d do in a NOC: prove where the break is (L1/L2/L3), and collect evidence quickly.</p>
+  <ol>
+    <li><strong>L3 identity:</strong> Print your IP addresses and default route. Identify your default gateway.</li>
+    <li><strong>DNS triage:</strong> Prove whether a failure is DNS or routing (use <code>ping</code> and <code>dig</code>).</li>
+    <li><strong>Port check:</strong> Prove whether a service is listening on TCP 22 and which process owns it.</li>
+    <li><strong>Trace path:</strong> Run <code>traceroute</code> to a public site and identify the first hop.</li>
+    <li><strong>Build a tiny DHCP lab:</strong> Configure <code>dnsmasq</code> to hand out leases on a test interface and verify a client receives an IP.</li>
+    <li><strong>Find my public IP:</strong> Fetch your router's public IP address from the command line using a web service.</li>
+    <li><strong>Test a specific port:</strong> Use <code>nc</code> (netcat) or <code>telnet</code> to check if a remote server is listening on port 443.</li>
+    <li><strong>View routing table details:</strong> Display the routing table quickly without resolving IP addresses to slow hostnames.</li>
+    <li><strong>Packet Sniffing:</strong> Analyze traffic by using <code>tcpdump</code> to capture ICMP (ping) packets on any interface.</li>
+    <li><strong>Firewalls:</strong> Use <code>ufw</code> to confidently allow incoming web traffic on port 8080.</li>
+    <li><strong>VPNs:</strong> Generate a WireGuard private and public key pair sequence.</li>
+    <li><strong>Dynamic Routing:</strong> Read up and explain the difference between BGP (EGP) and OSPF (IGP) in one summary line.</li>
+    <li><strong>Network Namespaces:</strong> Create a new isolated network namespace named <code>isolated</code> and list all namespaces.</li>
+    <li><strong>Load Balancing:</strong> Write a basic Nginx <code>upstream</code> block to balance traffic between two IP addresses.</li>
+  </ol>
+</div>
+
+<div class="section-answers">
+  <h2>18. Answers</h2>
+  <pre data-code="# Exercise 1: L3 identity
+ip a
+ip r
+# Default route line looks like:
+# default via 192.168.1.1 dev eth0
+
+# Exercise 2: DNS triage
+ping -c 2 8.8.8.8
+ping -c 2 google.com
+dig google.com
+# If IP ping works but domain ping fails, it's DNS.
+
+# Exercise 3: Port check
+sudo ss -tulpn | grep ':22'
+
+# Exercise 4: Trace path
+traceroute 8.8.8.8
+# First hop is usually your default gateway/router.
+
+# Exercise 5: Build a tiny DHCP lab (server side)
+sudo apt install dnsmasq
+sudo tee /etc/dnsmasq.d/lab.conf <<'EOF'
+interface=eth1
+dhcp-range=192.168.99.50,192.168.99.150,12h
+dhcp-option=3,192.168.99.1
+EOF
+sudo ip addr add 192.168.99.1/24 dev eth1
+sudo systemctl restart dnsmasq
+
+# Client side (example)
+sudo dhclient -v eth0
+
+# Exercise 6: Find my public IP
+curl ifconfig.me
+# or: curl api.ipify.org
+
+# Exercise 7: Test a specific port
+nc -vz google.com 443
+
+# Exercise 8: View routing table details
+ip route -n
+# or: route -n
+
+# Exercise 9: Packet Sniffing
+sudo tcpdump -i any icmp
+
+# Exercise 10: Firewalls
+sudo ufw allow 8080/tcp
+
+# Exercise 11: VPNs
+wg genkey | tee privatekey | wg pubkey > publickey
+
+# Exercise 12: Dynamic Routing
+# OSPF routes traffic WITHIN your organization's network (Interior), while BGP routes traffic BETWEEN different organizations' networks on the internet (Exterior).
+
+# Exercise 13: Network Namespaces
+sudo ip netns add isolated
+ip netns list
+
+# Exercise 14: Load Balancing
+# upstream backend {
+#   server 10.0.0.1;
+#   server 10.0.0.2;
+# }"></pre>
+</div>
+

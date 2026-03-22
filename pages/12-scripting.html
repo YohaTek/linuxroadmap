@@ -1,0 +1,418 @@
+<h1>12. Shell Programming / Scripting</h1>
+<p class="muted">Automate tasks with Bash scripts.</p>
+
+<div class="section-concept">
+  <h2>1. Concept Overview</h2>
+  <p>
+    A shell script is just a text file containing a list of commands you would run manually.
+  </p>
+  <p>
+    It starts with a <strong>Shebang</strong> (<code>#!/bin/bash</code>) which tells the system which interpreter to
+    use. Scripts allow you to use variables, loops, and conditionals to build complex automation logic.
+  </p>
+</div>
+
+<div class="section-commands">
+  <h2>2. Key Syntax</h2>
+  <div class="card">
+    <strong>Variables</strong>
+    <pre data-code="NAME='Alice'          # No spaces around =
+echo " Hello $NAME" # Use quotes echo 'Hello $NAME' # Single quotes=Literal (No variable expansion)"></pre>
+  </div>
+  <div class="card">
+    <strong>Conditionals (if)</strong>
+    <pre data-code="if [ -f 'file.txt' ]; then
+echo 'File exists'
+else
+echo 'Missing'
+fi"></pre>
+  </div>
+  <div class="card">
+    <strong>Loops (for)</strong>
+    <pre data-code="for file in *.jpg; do
+echo " Processing $file" done"></pre>
+  </div>
+  <div class="card">
+    <strong>Arguments</strong>
+    <pre data-code="$1, $2, $3   # Positional arguments
+$#           # Number of arguments
+$@           # All arguments (as list)"></pre>
+  </div>
+</div>
+
+<div class="section-scenarios">
+  <h2>3. Real-World Scenarios</h2>
+
+  <h3>Scenario A: "Backup Script"</h3>
+  <p>Archive a folder and name it with today's date.</p>
+  <pre data-code="#!/bin/bash
+DATE=$(date +%Y-%m-%d)
+tar -czf backup-$DATE.tar.gz /var/www/html
+echo 'Backup complete!'"></pre>
+
+  <h3>Scenario B: "Check if service is running"</h3>
+  <p>Restart nginx if it's down.</p>
+  <pre data-code="#!/bin/bash
+if ! pgrep -x 'nginx' > /dev/null; then
+  echo 'Nginx is down! Restarting...'
+  sudo systemctl start nginx
+fi"></pre>
+</div>
+
+<div class="section-deep-dive">
+  <h2>4. Deep Dive: Exit Codes</h2>
+  <p>
+    Every command returns a number when it finishes: <strong>Exit Code</strong>.
+    <br><code>0</code> = Success.
+    <br><code>1-255</code> = Error.
+  </p>
+  <p>
+    You can check the last exit code with <code>$?</code>.
+    <br><code>ls /fakefile; echo $?</code> will print <code>2</code> (No such file).
+  </p>
+</div>
+
+<div class="section-functions">
+  <h2>5. Functions & Reuse</h2>
+  <p>
+    Functions let you group logic and call it multiple times, keeping scripts readable and DRY (Don’t Repeat Yourself).
+  </p>
+  <pre data-code="#!/usr/bin/env bash
+set -euo pipefail
+
+log() {
+  local level=$1
+  shift
+  printf '[%s] %s\n' &quot;$level&quot; &quot;$*&quot;
+}
+
+backup_dir() {
+  local src=$1
+  local dest=$2
+  local date
+  date=$(date +%Y-%m-%d)
+  tar -czf &quot;$dest/backup-$date.tar.gz&quot; &quot;$src&quot;
+}
+
+log INFO 'Starting backup...'
+backup_dir &quot;/var/www/html&quot; &quot;$HOME/backups&quot;
+log INFO 'Backup finished.'"></pre>
+</div>
+
+<div class="section-args-parsing">
+  <h2>6. Handling Arguments Safely</h2>
+  <p>
+    For small scripts, positional parameters are enough. For larger ones, parsing flags improves UX.
+  </p>
+  <pre data-code="# Simple positional arguments
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ &quot;${#}&quot; -lt 2 ]; then
+  echo &quot;Usage: $0 SOURCE DEST&quot;
+  exit 1
+fi
+
+src=$1
+dest=$2
+cp -r -- &quot;$src&quot; &quot;$dest&quot;"></pre>
+
+  <pre data-code="# Minimal flag parser
+#!/usr/bin/env bash
+set -euo pipefail
+
+dry_run=false
+target=&quot;&quot;
+
+while [ &quot;${#}&quot; -gt 0 ]; do
+  case $1 in
+    --dry-run) dry_run=true; shift ;;
+    -t|--target) target=$2; shift 2 ;;
+    *) echo &quot;Unknown arg: $1&quot; >&2; exit 1 ;;
+  esac
+done
+
+echo &quot;Dry run: $dry_run; Target: $target&quot;"></pre>
+</div>
+
+<div class="section-text-processing">
+  <h2>7. Loops, Globs & Text Processing</h2>
+  <p>Shell scripts shine at iterating over files and piping through Unix tools like <code>grep</code>, <code>sed</code>, and <code>awk</code>.</p>
+  <pre data-code="# Rename all .log files to .log.bak
+for f in *.log; do
+  [ -e &quot;$f&quot; ] || continue   # Handle no matches
+  mv -- &quot;$f&quot; &quot;$f.bak&quot;
+done"></pre>
+
+  <pre data-code="# Extract error lines from nginx logs today
+today=$(date +%Y-%m-%d)
+grep &quot;$today&quot; /var/log/nginx/error.log | grep -i 'error'"></pre>
+
+  <pre data-code="# Sum numbers from stdin
+total=0
+while read -r n; do
+  total=$(( total + n ))
+done
+echo &quot;Total: $total&quot;"></pre>
+</div>
+
+<div class="section-safe-patterns">
+  <h2>8. Safety Patterns</h2>
+  <p>
+    Small safety habits prevent destructive mistakes in production scripts.
+  </p>
+  <pre data-code="#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
+usage() {
+  echo &quot;Usage: $0 /absolute/path/to/dir&quot; >&2
+  exit 1
+}
+
+dir=${1:-}
+[ -d &quot;$dir&quot; ] || usage
+
+echo &quot;Cleaning temp files in: $dir&quot;
+find &quot;$dir&quot; -maxdepth 1 -type f -name '*.tmp' -print0 | xargs -0 rm -f"></pre>
+  <ul>
+    <li><strong><code>set -euo pipefail</code>:</strong> Fail fast on errors, undefined variables, and pipe failures.</li>
+    <li><strong><code>IFS</code>:</strong> Narrowed to newline/tab to avoid splitting on spaces inside filenames.</li>
+    <li><strong>Defensive checks:</strong> Validate arguments and paths before <code>rm</code> or <code>mv</code>.</li>
+  </ul>
+</div>
+
+<div class="section-mini-tools">
+  <h2>9. Mini Utilities You Can Build</h2>
+  <p>Examples of small scripts you can practice writing:</p>
+  <ul>
+    <li><strong>log-watch.sh:</strong> Follow a log file and highlight lines containing &quot;ERROR&quot;.</li>
+    <li><strong>disk-usage-report.sh:</strong> Print top 10 largest directories under a given path.</li>
+    <li><strong>service-checker.sh:</strong> Read a list of service names and ensure each is running, restarting if needed.</li>
+  </ul>
+  <pre data-code="# disk-usage-report.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+root=${1:-/var}
+echo &quot;Top 10 largest directories under $root:&quot;
+du -sh &quot;$root&quot;/* 2>/dev/null | sort -hr | head -n 10"></pre>
+</div>
+
+<div class="section-exercises">
+  <h2>10. Practice Exercises</h2>
+  <p>Use these exercises to solidify your Bash scripting skills. Start simple, then add safety features like <code>set -euo pipefail</code> and argument validation.</p>
+
+  <h3>Exercise 1: Log error watcher</h3>
+  <p>Write a script <code>log-watch.sh</code> that:</p>
+  <ul>
+    <li>Takes a log file path and a keyword as arguments.</li>
+    <li>Follows the log with <code>tail -F</code> and prints only lines that contain the keyword.</li>
+    <li>Prefixes matches with a timestamp (use <code>date</code>).</li>
+  </ul>
+  <pre data-code="# ./log-watch.sh /var/log/nginx/error.log ERROR
+#!/usr/bin/env bash
+
+file=$1
+pattern=$2
+
+tail -F &quot;$file&quot; | while read -r line; do
+  if [[ $line == *&quot;$pattern&quot;* ]]; then
+    printf &quot;[%s] %s\n&quot; &quot;$(date +%H:%M:%S)&quot; &quot;$line&quot;
+  fi
+done"></pre>
+
+  <h3>Exercise 2: Service health checker</h3>
+  <p>Create a script <code>check-services.sh</code> that:</p>
+  <ul>
+    <li>Reads service names from a text file (one per line).</li>
+    <li>For each service, reports whether it is active (<code>systemctl is-active</code>).</li>
+    <li>Optionally restarts stopped services when called with <code>--fix</code>.</li>
+  </ul>
+  <pre data-code="# ./check-services.sh --fix services.txt
+nginx: active
+sshd: inactive - restarting...
+...</pre>
+
+  <h3>Exercise 3: Backup with rotation</h3>
+  <p>Extend the earlier backup script to:</p>
+  <ul>
+    <li>Accept source and destination as arguments.</li>
+    <li>Keep only the latest N backups (delete older ones).</li>
+    <li>Use functions for <code>backup_once</code> and <code>prune_old</code>.</li>
+  </ul>
+
+  <h3>Exercise 4: Simple menu-driven tool</h3>
+  <p>Write a script <code>net-helper.sh</code> that shows a menu:</p>
+  <pre data-code="1) Show IP addresses
+2) Show routes
+3) Show listening ports
+q) Quit"></pre>
+  <p>Based on the user’s choice, run <code>ip a</code>, <code>ip r</code>, or <code>ss -tulpn</code>. Implement this with a <code>while</code> loop and <code>case</code> statement.</p>
+
+  <h3>Exercise 5: Safer delete tool</h3>
+  <p>Implement <code>trash.sh</code> that:</p>
+  <ul>
+    <li>Moves files to <code>~/.trash</code> instead of deleting them.</li>
+    <li>Creates <code>~/.trash</code> if it doesn’t exist.</li>
+    <li>Includes a <code>--purge</code> option to permanently delete everything in the trash.</li>
+  </ul>
+
+  <h3>Exercise 6: Bulk rename tool</h3>
+  <p>Write a script <code>rename.sh</code> that:</p>
+  <ul>
+    <li>Takes a file extension (e.g., <code>txt</code>) as an argument.</li>
+    <li>Finds all files in the current directory with that extension and renames them to have a <code>.bak</code> suffix.</li>
+  </ul>
+
+  <h3>Exercise 7: User checker</h3>
+  <p>Write a script <code>check-user.sh</code> that:</p>
+  <ul>
+    <li>Takes a username as an argument.</li>
+    <li>Checks if the user exists in <code>/etc/passwd</code>.</li>
+    <li>If they exist, prints their home directory; otherwise, prints "User not found".</li>
+  </ul>
+</div>
+
+<div class="section-answers">
+  <h2>11. Answers (Sample Solutions)</h2>
+  <p>There are many valid solutions. These are clean, “production-ish” baselines.</p>
+
+  <h3>Exercise 1 (log-watch.sh)</h3>
+  <pre data-code="#!/usr/bin/env bash
+set -euo pipefail
+
+file=${1:-}
+pattern=${2:-}
+[ -n &quot;$file&quot; ] &amp;&amp; [ -n &quot;$pattern&quot; ] || { echo &quot;Usage: $0 LOGFILE PATTERN&quot; >&2; exit 1; }
+
+tail -F -- &quot;$file&quot; | while read -r line; do
+  if [[ $line == *&quot;$pattern&quot;* ]]; then
+    printf &quot;[%s] %s\n&quot; &quot;$(date +%H:%M:%S)&quot; &quot;$line&quot;
+  fi
+done"></pre>
+
+  <h3>Exercise 2 (check-services.sh)</h3>
+  <pre data-code="#!/usr/bin/env bash
+set -euo pipefail
+
+fix=false
+if [[ ${1:-} == &quot;--fix&quot; ]]; then fix=true; shift; fi
+file=${1:-}
+[ -n &quot;$file&quot; ] || { echo &quot;Usage: $0 [--fix] services.txt&quot; >&2; exit 1; }
+
+while read -r svc; do
+  [[ -z ${svc} ]] &amp;&amp; continue
+  if systemctl is-active --quiet &quot;$svc&quot;; then
+    echo &quot;$svc: active&quot;
+  else
+    if $fix; then
+      echo &quot;$svc: inactive - restarting...&quot;
+      sudo systemctl restart &quot;$svc&quot; || true
+    else
+      echo &quot;$svc: inactive&quot;
+    fi
+  fi
+done &lt; &quot;$file&quot;"></pre>
+
+  <h3>Exercise 3 (backup with rotation)</h3>
+  <pre data-code=\"#!/usr/bin/env bash
+set -euo pipefail
+
+backup_once() {
+  local src=$1 dest=$2 date=&quot;$(date +%Y-%m-%d)&quot;
+  tar -czf &quot;$dest/backup-$date.tar.gz&quot; &quot;$src&quot;
+}
+
+prune_old() {
+  local dest=$1 keep=${2:-5}
+  ls -t &quot;$dest&quot;/backup-*.tar.gz 2>/dev/null | tail -n +$((keep+1)) | xargs rm -f
+}
+
+src=${1:-}.backup.tar.gz
+dest=${2:-$HOME/backups}
+mkdir -p &quot;$dest&quot;
+backup_once &quot;$src&quot; &quot;$dest&quot;
+prune_old &quot;$dest&quot; 5\"></pre>
+
+  <h3>Exercise 4 (net-helper.sh)</h3>
+  <pre data-code=\"#!/usr/bin/env bash
+set -euo pipefail
+
+while true; do
+  echo '1) Show IP addresses'
+  echo '2) Show routes'
+  echo '3) Show listening ports'
+  echo 'q) Quit'
+  read -r choice
+  case $choice in
+    1) ip a ;;
+    2) ip r ;;
+    3) sudo ss -tulpn ;;
+    q) exit 0 ;;
+    *) echo 'Invalid choice' ;;
+  esac
+  echo
+done\"></pre>
+
+  <h3>Exercise 5 (trash.sh)</h3>
+  <pre data-code=\"#!/usr/bin/env bash
+set -euo pipefail
+
+trash_dir=&quot;$HOME/.trash&quot;
+mkdir -p &quot;$trash_dir&quot;
+
+if [[ ${1:-} == '--purge' ]]; then
+  rm -rf &quot;$trash_dir&quot;/*
+  echo 'Trash emptied.'
+  exit 0
+fi
+
+for item in "$@"; do
+  mv -- "$item" "$trash_dir/"
+done
+
+echo "Moved $# item(s) to trash."</pre>
+
+  <h3>Exercise 6 (rename.sh)</h3>
+  <pre data-code="#!/usr/bin/env bash
+set -euo pipefail
+
+ext=${1:-}
+[ -n &quot;$ext&quot; ] || { echo &quot;Usage: $0 EXTENSION&quot; >&2; exit 1; }
+
+count=0
+for file in *.$ext; do
+  [ -e &quot;$file&quot; ] || continue
+  mv -- &quot;$file&quot; &quot;$file.bak&quot;
+  ((count++))
+done
+echo &quot;Renamed $count files.&quot;"></pre>
+
+  <h3>Exercise 7 (check-user.sh)</h3>
+  <pre data-code="#!/usr/bin/env bash
+set -euo pipefail
+
+user=${1:-}
+[ -n &quot;$user&quot; ] || { echo &quot;Usage: $0 USERNAME&quot; >&2; exit 1; }
+
+if grep -q &quot;^$user:&quot; /etc/passwd; then
+  homedir=$(grep &quot;^$user:&quot; /etc/passwd | cut -d: -f6)
+  echo &quot;User '$user' exists. Home directory: $homedir&quot;
+else
+  echo &quot;User '$user' not found.&quot;
+fi"></pre>
+  <p>
+    Multiple valid solutions exist. These are clean, production-ready baselines.
+  </p>
+</div>"
+
+<div class="section-pitfalls">
+  <h2>12. Common Pitfalls</h2>
+  <ul>
+    <li><strong>Whitespace matters:</strong> <code>if [ $a == $b ]</code> needs spaces inside the brackets.
+      <code>if [$a==$b]</code> will fail.</li>
+    <li><strong>Unquoted variables:</strong> Always quote your variables (<code>"$NAME"</code>) to handle filenames with
+      spaces correctly.</li>
+  </ul>
+</div>

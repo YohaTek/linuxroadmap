@@ -1,0 +1,134 @@
+<h1>5. Process Management</h1>
+<p class="muted">Controlling running programs, signals, and background jobs.</p>
+
+<div class="section-concept">
+  <h2>1. Concept Overview</h2>
+  <p>
+    Every program running on Linux is a <strong>Process</strong>. The kernel assigns each process a unique ID called a
+    <strong>PID</strong>.
+  </p>
+  <p>
+    Processes have parents (who started them), owners (who ran them), and states (Running, Sleeping, Zombie). You can
+    control processes by sending them <strong>Signals</strong> (like "Stop", "Terminate", or "Kill").
+  </p>
+</div>
+
+<div class="section-commands">
+  <h2>2. Key Commands</h2>
+  <div class="card">
+    <strong>ps (Process Status)</strong>
+    <p>Snapshot of current processes.</p>
+    <pre data-code="ps aux            # List ALL processes
+ps -ef            # Standard syntax
+ps aux | grep app # Find specific process"></pre>
+  </div>
+  <div class="card">
+    <strong>kill & killall</strong>
+    <p>Send signals to processes.</p>
+    <pre data-code="kill 1234         # Terminate PID 1234 (SIGTERM)
+kill -9 1234      # Force Kill PID 1234 (SIGKILL)
+killall nginx     # Kill all processes named 'nginx'"></pre>
+  </div>
+  <div class="card">
+    <strong>Jobs (fg/bg)</strong>
+    <p>Manage shell jobs.</p>
+    <pre data-code="command &         # Run in background
+jobs              # List background jobs
+fg %1             # Bring job 1 to foreground
+bg %1             # Resume job 1 in background
+Ctrl+Z            # Pause current foreground job"></pre>
+  </div>
+</div>
+
+<div class="section-scenarios">
+  <h2>3. Real-World Scenarios</h2>
+
+  <h3>Scenario A: "A program is stuck/frozen"</h3>
+  <p>You can't close a program normally.</p>
+  <pre data-code="pgrep firefox         # Find PID (e.g., 5566)
+kill 5566             # Try polite kill first
+# If still stuck:
+kill -9 5566          # Force kill (Nuclear option)"></pre>
+
+  <h3>Scenario B: "Running a long script"</h3>
+  <p>You want to run a backup script that takes hours, without keeping your terminal open.</p>
+  <pre data-code="nohup ./backup.sh &   # Run immune to hangups
+# Output goes to nohup.out. You can close terminal now."></pre>
+</div>
+
+<div class="section-deep-dive">
+  <h2>4. Deep Dive: Signals</h2>
+  <p>
+    "Killing" a process actually means sending it a signal.
+  </p>
+  <ul>
+    <li><strong>SIGTERM (15):</strong> "Please stop." The default. Allows the app to save data and close files.</li>
+    <li><strong>SIGKILL (9):</strong> "Die immediately." The kernel removes the process instantly. Data may be lost.
+    </li>
+    <li><strong>SIGINT (2):</strong> "Interrupt." Sent when you press <code>Ctrl+C</code>.</li>
+  </ul>
+</div>
+
+<div class="section-pitfalls">
+  <h2>5. Common Pitfalls</h2>
+  <ul>
+    <li><strong>Zombie Processes:</strong> A "Zombie" (defunct) is a process that has finished but its parent hasn't
+      checked on it yet. You can't kill a zombie (it's already dead!). You must kill its <strong>parent</strong> to
+      clean it up.</li>
+    <li><strong>Killing PID 1:</strong> PID 1 is the init system (systemd). If you kill it, the system crashes (kernel
+      panic).</li>
+  </ul>
+</div>
+
+<div class="section-exercises">
+  <h2>6. Exercises</h2>
+  <p>These are practical drills you’ll use while troubleshooting services and networking issues (high CPU, stuck daemons, port conflicts).</p>
+  <ol>
+    <li><strong>Find by name:</strong> Start a process (e.g. <code>sleep 1000</code>) and find its PID with <code>pgrep</code> and <code>ps</code>.</li>
+    <li><strong>Polite vs force:</strong> Terminate that process with <code>kill</code>, then repeat and use <code>kill -9</code>.</li>
+    <li><strong>Background job control:</strong> Run a long command, stop it with <code>Ctrl+Z</code>, resume with <code>bg</code>, then bring it back with <code>fg</code>.</li>
+    <li><strong>Who owns the CPU:</strong> Use <code>ps</code> to list the top 5 CPU-consuming processes.</li>
+    <li><strong>Port conflict debugging:</strong> If a service won’t start because a port is in use, identify the owning process.</li>
+    <li><strong>Kill unresponsive session:</strong> Find the PID of your current terminal session and kill it to force a logout.</li>
+    <li><strong>Run process after logout:</strong> Start a long-running script (e.g. <code>sleep 1000</code>) and detach it from the terminal so it survives shell closure.</li>
+    <li><strong>Check process tree:</strong> View the parent-child relationships of running processes to understand process ancestry.</li>
+  </ol>
+</div>
+
+<div class="section-answers">
+  <h2>7. Answers</h2>
+  <pre data-code="# Exercise 1: Find by name
+sleep 1000 &amp;
+pgrep sleep
+ps aux | grep '[s]leep'
+
+# Exercise 2: Polite vs force
+kill &lt;PID&gt;        # SIGTERM
+kill -9 &lt;PID&gt;     # SIGKILL
+
+# Exercise 3: Background job control
+ping -c 100 8.8.8.8
+# press Ctrl+Z
+bg %1
+jobs
+fg %1
+
+# Exercise 4: Who owns the CPU
+ps aux --sort=-%cpu | head -n 6
+
+# Exercise 5: Port conflict debugging (example port 80)
+sudo ss -tulpn | grep ':80'
+
+# Exercise 6: Kill unresponsive session
+echo $$   # Get current shell PID
+# kill -9 $$ (Warning: this immediately logs you out of the session!)
+
+# Exercise 7: Run process after logout
+nohup sleep 1000 &
+# Or simply use tmux or screen
+
+# Exercise 8: Check process tree
+pstree
+# or: ps -ejH</pre>
+</div>
+

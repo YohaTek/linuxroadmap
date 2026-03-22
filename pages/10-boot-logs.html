@@ -1,0 +1,123 @@
+<h1>10. Boot & Logs</h1>
+<p class="muted">Understanding how Linux starts and how to find errors.</p>
+
+<div class="section-concept">
+  <h2>1. Concept Overview</h2>
+  <p>
+    The Linux boot process is a chain reaction:
+    <br><strong>BIOS/UEFI</strong> -> <strong>Bootloader (GRUB)</strong> -> <strong>Kernel</strong> -> <strong>Init
+      System (systemd)</strong> -> <strong>User Space</strong>.
+  </p>
+  <p>
+    If something fails, the system logs it. Modern Linux uses <strong>journald</strong> (binary logs) and
+    <strong>syslog</strong> (text logs) to record events.
+  </p>
+</div>
+
+<div class="section-commands">
+  <h2>2. Key Commands</h2>
+  <div class="card">
+    <strong>journalctl</strong>
+    <p>Query the systemd journal.</p>
+    <pre data-code="journalctl -b           # Logs from current boot
+journalctl -b -1        # Logs from PREVIOUS boot
+journalctl -p err       # Show only ERRORs
+journalctl -k           # Show Kernel logs (dmesg)"></pre>
+  </div>
+  <div class="card">
+    <strong>dmesg</strong>
+    <p>Kernel ring buffer.</p>
+    <pre data-code="dmesg | less            # View kernel messages
+dmesg | grep usb        # Filter for USB events
+dmesg -w                # Follow new messages"></pre>
+  </div>
+  <div class="card">
+    <strong>systemd-analyze</strong>
+    <p>Boot performance.</p>
+    <pre data-code="systemd-analyze         # Show total boot time
+systemd-analyze blame   # Show which services took longest"></pre>
+  </div>
+</div>
+
+<div class="section-scenarios">
+  <h2>3. Real-World Scenarios</h2>
+
+  <h3>Scenario A: "The system crashed yesterday"</h3>
+  <p>You rebooted, but want to see why it crashed.</p>
+  <pre data-code="journalctl -b -1 -e
+# -b -1: Previous boot
+# -e: Jump to end"></pre>
+
+  <h3>Scenario B: "Slow boot times"</h3>
+  <p>Your server takes 2 minutes to start.</p>
+  <pre data-code="systemd-analyze blame
+# Output:
+# 1min 20s  apt-daily-upgrade.service
+# ...
+# You found the culprit!"></pre>
+</div>
+
+<div class="section-deep-dive">
+  <h2>4. Deep Dive: The Init Process</h2>
+  <p>
+    <strong>PID 1</strong> is the first process started by the kernel. It is the ancestor of ALL other processes.
+  </p>
+  <p>
+    If PID 1 dies, the kernel panics and the system halts. In modern Linux, PID 1 is <code>systemd</code>. In older
+    systems (and containers), it might be <code>init</code> or a shell script.
+  </p>
+</div>
+
+<div class="section-pitfalls">
+  <h2>5. Common Pitfalls</h2>
+  <ul>
+    <li><strong>Deleting logs to save space:</strong> Don't manually delete <code>/var/log</code> files. Use
+      <code>journalctl --vacuum-time=2d</code> to clean up safely.</li>
+    <li><strong>Ignoring "Emergency Mode":</strong> If Linux drops you into a root shell at boot, it usually means a
+      disk mount failed (check <code>/etc/fstab</code>).</li>
+  </ul>
+</div>
+
+<div class="section-exercises">
+  <h2>6. Exercises</h2>
+  <p>Boot failures and service failures often look like “network is broken”. These exercises teach you to read the evidence.</p>
+  <ol>
+    <li><strong>Previous boot:</strong> Show logs from the previous boot and jump to the end.</li>
+    <li><strong>Kernel-only view:</strong> Show only kernel messages from the current boot.</li>
+    <li><strong>Error filtering:</strong> Filter journal logs to priority “error” and above.</li>
+    <li><strong>Slow boot investigation:</strong> Find the top 5 slowest services at boot.</li>
+    <li><strong>Log retention:</strong> Check current journal disk usage and vacuum to a small size.</li>
+    <li><strong>Search by specific time:</strong> Find logs that occurred specifically between `08:00` and `09:00` today.</li>
+    <li><strong>Filter by PID:</strong> Show logs generated only by a specific Process ID.</li>
+    <li><strong>Live kernel logs:</strong> Keep a terminal window open that prints new kernel messages as they happen.</li>
+  </ol>
+</div>
+
+<div class="section-answers">
+  <h2>7. Answers</h2>
+  <pre data-code="# Exercise 1: Previous boot
+journalctl -b -1 -e
+
+# Exercise 2: Kernel-only view
+journalctl -k -b
+
+# Exercise 3: Error filtering
+journalctl -p err -b
+
+# Exercise 4: Slow boot investigation
+systemd-analyze blame | head -n 5
+
+# Exercise 5: Log retention
+journalctl --disk-usage
+sudo journalctl --vacuum-size=200M
+
+# Exercise 6: Search by specific time
+journalctl --since "08:00" --until "09:00"
+
+# Exercise 7: Filter by PID
+journalctl _PID=1234
+
+# Exercise 8: Live kernel logs
+dmesg -w"></pre>
+</div>
+

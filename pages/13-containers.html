@@ -1,0 +1,127 @@
+<h1>13. Containerization & Related Topics</h1>
+<p class="muted">Docker, isolation, and shipping applications.</p>
+
+<div class="section-concept">
+  <h2>1. Concept Overview</h2>
+  <p>
+    Containers allow you to package an application with all its libraries and dependencies into a single "Image".
+  </p>
+  <p>
+    Unlike Virtual Machines (which simulate a whole computer), Containers share the host Linux kernel but are isolated
+    using <strong>Namespaces</strong> (visibility) and <strong>Cgroups</strong> (resource limits). This makes them
+    lightweight and fast.
+  </p>
+</div>
+
+<div class="section-commands">
+  <h2>2. Key Commands</h2>
+  <div class="card">
+    <strong>Running</strong>
+    <pre data-code="docker run hello-world    # Run a test container
+docker run -d -p 80:80 nginx  # Run nginx in background (-d) on port 80
+docker ps                 # List running containers
+docker ps -a              # List ALL containers (including stopped)"></pre>
+  </div>
+  <div class="card">
+    <strong>Managing</strong>
+    <pre data-code="docker stop <id>          # Stop a container
+docker rm <id>            # Remove a container
+docker images             # List downloaded images
+docker rmi <image>        # Remove an image"></pre>
+  </div>
+  <div class="card">
+    <strong>Debugging</strong>
+    <pre data-code="docker logs <id>          # View container output
+docker exec -it <id> bash # Open a shell INSIDE the container"></pre>
+  </div>
+</div>
+
+<div class="section-scenarios">
+  <h2>3. Real-World Scenarios</h2>
+
+  <h3>Scenario A: "Try a new tool without installing it"</h3>
+  <p>You want to try Python 3.11 but don't want to mess up your system.</p>
+  <pre data-code="docker run --rm -it python:3.11 bash
+# --rm: Delete container when done
+# -it: Interactive terminal
+# You are now inside a clean Python environment!"></pre>
+
+  <h3>Scenario B: "Running a database"</h3>
+  <p>Start a Postgres database quickly.</p>
+  <pre data-code="docker run -d \
+  -e POSTGRES_PASSWORD=secret \
+  -p 5432:5432 \
+  postgres:latest"></pre>
+</div>
+
+<div class="section-deep-dive">
+  <h2>4. Deep Dive: Layers</h2>
+  <p>
+    Docker images are built in <strong>Layers</strong>. Each line in a <code>Dockerfile</code> creates a new layer.
+  </p>
+  <p>
+    Layers are cached. If you change the last line of your Dockerfile, Docker only rebuilds that last layer, not the
+    whole thing. This makes building images very fast.
+  </p>
+</div>
+
+<div class="section-pitfalls">
+  <h2>5. Common Pitfalls</h2>
+  <ul>
+    <li><strong>Data Persistence:</strong> Files created inside a container disappear when you delete the container. Use
+      <strong>Volumes</strong> (<code>-v /host/path:/container/path</code>) to save data permanently.</li>
+    <li><strong>"It works on my machine":</strong> It usually does with Docker, but check your architecture! (ARM vs
+      x86).</li>
+  </ul>
+</div>
+
+<div class="section-exercises">
+  <h2>6. Exercises</h2>
+  <p>Focus on skills you’ll use for networked services: port mapping, logs, and repeatable runs.</p>
+  <ol>
+    <li><strong>Port mapping:</strong> Run nginx on port 8080 and confirm it’s reachable from your browser.</li>
+    <li><strong>Inspect networking:</strong> List running containers and show which ports are published.</li>
+    <li><strong>Logs:</strong> View the last 20 log lines of your nginx container.</li>
+    <li><strong>Exec:</strong> Open a shell inside the container and run <code>ps</code> and <code>ss</code>.</li>
+    <li><strong>Persistence:</strong> Run a container with a bind mount and confirm a file persists after container deletion.</li>
+    <li><strong>Interactive ephemeral container:</strong> Start an Ubuntu container, open a bash shell, and ensure it deletes itself automatically when you exit.</li>
+    <li><strong>View resource usage:</strong> See how much CPU and RAM your running containers are consuming in real-time.</li>
+    <li><strong>Prune stopped containers:</strong> Clean up your system by removing all stopped containers at once.</li>
+  </ol>
+</div>
+
+<div class="section-answers">
+  <h2>7. Answers</h2>
+  <pre data-code="# Exercise 1: Port mapping
+docker run -d --name web -p 8080:80 nginx
+# Visit: http://localhost:8080
+
+# Exercise 2: Inspect networking
+docker ps
+docker port web
+
+# Exercise 3: Logs
+docker logs --tail 20 web
+
+# Exercise 4: Exec
+docker exec -it web bash
+ps aux | head
+ss -tulpn | head
+exit
+
+# Exercise 5: Persistence
+mkdir -p /tmp/docker-lab
+docker run --rm -it -v /tmp/docker-lab:/data alpine sh -lc 'echo hello > /data/hi.txt'
+cat /tmp/docker-lab/hi.txt
+
+# Exercise 6: Interactive ephemeral container
+docker run --rm -it ubuntu bash
+# (Inside container) exit
+
+# Exercise 7: View resource usage
+docker stats
+
+# Exercise 8: Prune stopped containers
+docker container prune -f"></pre>
+</div>
+</div>

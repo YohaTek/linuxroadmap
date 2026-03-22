@@ -1,0 +1,145 @@
+<h1>7. Service / Daemon Management</h1>
+<p class="muted">Managing background services with systemd.</p>
+
+<div class="section-concept">
+  <h2>1. Concept Overview</h2>
+  <p>
+    A <strong>Service</strong> (or Daemon) is a program that runs in the background, waiting to handle requests (like a
+    web server) or performing scheduled tasks.
+  </p>
+  <p>
+    Most modern Linux distributions use <strong>systemd</strong> as the init system (PID 1). It starts everything else.
+    You control it with the <code>systemctl</code> command.
+  </p>
+</div>
+
+<div class="section-commands">
+  <h2>2. Key Commands</h2>
+  <div class="card">
+    <strong>systemctl (Control)</strong>
+    <p>Manage service state.</p>
+    <pre data-code="sudo systemctl start nginx    # Start now
+sudo systemctl stop nginx     # Stop now
+sudo systemctl restart nginx  # Stop then Start
+sudo systemctl reload nginx   # Reload config without stopping"></pre>
+  </div>
+  <div class="card">
+    <strong>systemctl (Enable/Disable)</strong>
+    <p>Manage boot behavior.</p>
+    <pre data-code="sudo systemctl enable nginx   # Start automatically at boot
+sudo systemctl disable nginx  # Do NOT start at boot
+systemctl is-enabled nginx    # Check current setting"></pre>
+  </div>
+  <div class="card">
+    <strong>systemctl (Status)</strong>
+    <p>Check health.</p>
+    <pre data-code="systemctl status nginx        # Show status, PID, and recent logs
+systemctl list-units --type=service  # List all running services"></pre>
+  </div>
+</div>
+
+<div class="section-scenarios">
+  <h2>3. Real-World Scenarios</h2>
+
+  <h3>Scenario A: "The web server is down"</h3>
+  <p>You try to visit your site and it fails.</p>
+  <pre data-code="systemctl status nginx
+# Active: failed (Result: exit-code)
+journalctl -u nginx -e    # Check the logs to see WHY it failed"></pre>
+
+  <h3>Scenario B: "Creating a custom service"</h3>
+  <p>You wrote a Python script <code>/opt/app.py</code> and want it to run forever.</p>
+  <pre data-code="# 1. Create unit file: /etc/systemd/system/myapp.service
+[Unit]
+Description=My App
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/app.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+# 2. Reload and start
+sudo systemctl daemon-reload
+sudo systemctl enable --now myapp"></pre>
+</div>
+
+<div class="section-deep-dive">
+  <h2>4. Deep Dive: Targets</h2>
+  <p>
+    Systemd uses "Targets" instead of old-school Runlevels.
+  </p>
+  <ul>
+    <li><strong>multi-user.target:</strong> Normal state (Text mode, Networking enabled). Equivalent to Runlevel 3.</li>
+    <li><strong>graphical.target:</strong> GUI mode. Equivalent to Runlevel 5.</li>
+    <li><strong>rescue.target:</strong> Single user mode for repairs.</li>
+  </ul>
+</div>
+
+<div class="section-pitfalls">
+  <h2>5. Common Pitfalls</h2>
+  <ul>
+    <li><strong>Editing unit files without reloading:</strong> If you change a <code>.service</code> file, you MUST run
+      <code>sudo systemctl daemon-reload</code> or systemd won't see the changes.</li>
+    <li><strong>Enable vs Start:</strong> <code>enable</code> only configures the <em>next</em> boot. <code>start</code>
+      runs it <em>now</em>. Use <code>enable --now</code> to do both.</li>
+  </ul>
+</div>
+
+<div class="section-exercises">
+  <h2>6. Exercises</h2>
+  <p>These are the “production basics”: understand status, logs, and restart behavior—especially for network services like SSH, DNS, DHCP, and web servers.</p>
+  <ol>
+    <li><strong>Status + logs:</strong> Pick a service (e.g. <code>ssh</code>) and view its status and the last 30 log lines.</li>
+    <li><strong>Enable at boot:</strong> Enable a service (use something safe like <code>cron</code> or <code>ssh</code> if installed), then verify it is enabled.</li>
+    <li><strong>Override config:</strong> Create a systemd drop-in override that sets an environment variable for a service.</li>
+    <li><strong>Restart policy:</strong> Explain what <code>Restart=always</code> does and when it can be dangerous.</li>
+    <li><strong>Network dependency:</strong> In a unit file, ensure the service starts after networking is up.</li>
+    <li><strong>List failed services:</strong> Use <code>systemctl</code> to find any services that have failed to start on your system.</li>
+    <li><strong>Mask a service:</strong> Completely prevent a service from starting (even manually) by masking it, then unmask it.</li>
+    <li><strong>Analyze boot time:</strong> Use <code>systemd-analyze</code> to find out how long your system took to boot and which service was the slowest.</li>
+  </ol>
+</div>
+
+<div class="section-answers">
+  <h2>7. Answers</h2>
+  <pre data-code="# Exercise 1: Status + logs
+systemctl status ssh
+sudo journalctl -u ssh -n 30 --no-pager
+
+# Exercise 2: Enable at boot
+sudo systemctl enable ssh
+systemctl is-enabled ssh
+
+# Exercise 3: Override config (drop-in override)
+sudo systemctl edit myapp
+# Then add:
+# [Service]
+# Environment=APP_ENV=prod
+sudo systemctl daemon-reload
+sudo systemctl restart myapp
+
+# Exercise 4: Restart policy
+# Restart=always restarts the service after any exit (success or failure).
+# Dangerous if the process exits quickly: it can crash-loop and burn CPU/logs.
+
+# Exercise 5: Network dependency
+# In the unit file:
+# [Unit]
+# After=network-online.target
+# Wants=network-online.target
+
+# Exercise 6: List failed services
+systemctl --failed
+
+# Exercise 7: Mask a service
+sudo systemctl mask nginx
+sudo systemctl unmask nginx
+
+# Exercise 8: Analyze boot time
+systemd-analyze
+systemd-analyze blame | head -n 5</pre>
+</div>
+

@@ -1,0 +1,133 @@
+<h1>9. Disks & Filesystems</h1>
+<p class="muted">Partitions, mounting, and monitoring disk usage.</p>
+
+<div class="section-concept">
+  <h2>1. Concept Overview</h2>
+  <p>
+    In Linux, hardware devices are files. Your hard drive is likely <code>/dev/sda</code> or <code>/dev/nvme0n1</code>.
+  </p>
+  <p>
+    You don't access the raw disk. You access a <strong>Partition</strong> (e.g., <code>/dev/sda1</code>) formatted with
+    a <strong>Filesystem</strong> (like ext4 or xfs). This filesystem is then <strong>Mounted</strong> to a directory
+    (like <code>/home</code> or <code>/mnt/usb</code>).
+  </p>
+</div>
+
+<div class="section-commands">
+  <h2>2. Key Commands</h2>
+  <div class="card">
+    <strong>lsblk (List Block Devices)</strong>
+    <p>Visualize disk structure.</p>
+    <pre data-code="lsblk             # Tree view of disks/partitions
+lsblk -f          # Show filesystem types (ext4, swap)"></pre>
+  </div>
+  <div class="card">
+    <strong>mount / umount</strong>
+    <p>Attach/Detach filesystems.</p>
+    <pre data-code="sudo mount /dev/sdb1 /mnt/usb  # Mount USB to folder
+sudo umount /mnt/usb           # Safely remove"></pre>
+  </div>
+  <div class="card">
+    <strong>df (Disk Free)</strong>
+    <p>Check available space.</p>
+    <pre data-code="df -h             # Human readable sizes"></pre>
+  </div>
+  <div class="card">
+    <strong>du (Disk Usage)</strong>
+    <p>Check directory size.</p>
+    <pre data-code="du -sh /var/log   # Size of log folder"></pre>
+  </div>
+</div>
+
+<div class="section-scenarios">
+  <h2>3. Real-World Scenarios</h2>
+
+  <h3>Scenario A: "Plugging in a new drive"</h3>
+  <p>You added a new virtual disk. Make it usable.</p>
+  <pre data-code="# 1. Identify it
+lsblk
+# 2. Create partition (using fdisk or parted)
+sudo fdisk /dev/sdb
+# 3. Format it (ext4)
+sudo mkfs.ext4 /dev/sdb1
+# 4. Mount it
+sudo mount /dev/sdb1 /data"></pre>
+
+  <h3>Scenario B: "Mounting permanently"</h3>
+  <p>If you reboot, the mount is lost. Add it to <code>/etc/fstab</code>.</p>
+  <pre data-code="# Get the UUID
+sudo blkid /dev/sdb1
+# Edit fstab
+echo 'UUID=xxxx-xxxx /data ext4 defaults 0 0' | sudo tee -a /etc/fstab"></pre>
+</div>
+
+<div class="section-deep-dive">
+  <h2>4. Deep Dive: Inodes</h2>
+  <p>
+    Sometimes <code>df -h</code> says you have space, but you can't create files. You might be out of
+    <strong>Inodes</strong>.
+  </p>
+  <p>
+    Every file takes up 1 Inode (index node) to store metadata. If you have millions of tiny files, you can run out of
+    inodes before you run out of gigabytes.
+    <br>Check with: <code>df -i</code>.
+  </p>
+</div>
+
+<div class="section-pitfalls">
+  <h2>5. Common Pitfalls</h2>
+  <ul>
+    <li><strong>Unmounting busy drives:</strong> You can't <code>umount</code> a drive if you are currently
+      <code>cd</code>'d inside it. You'll get "target is busy". <code>cd</code> out first!</li>
+    <li><strong>fstab errors:</strong> If you mess up <code>/etc/fstab</code>, your system might fail to boot. Always
+      test with <code>sudo mount -a</code> before rebooting.</li>
+  </ul>
+</div>
+
+<div class="section-exercises">
+  <h2>6. Exercises</h2>
+  <p>Storage problems often show up as “network problems” (apps time out because disks are slow). Practice the basics.</p>
+  <ol>
+    <li><strong>Identify devices:</strong> Use <code>lsblk -f</code> to list disks, partitions, filesystem type, and mountpoints.</li>
+    <li><strong>Find space issues:</strong> Use <code>df -h</code> to find the most full filesystem.</li>
+    <li><strong>Find inode exhaustion:</strong> Use <code>df -i</code> and explain what high inode usage means.</li>
+    <li><strong>Safe mount:</strong> Create <code>/mnt/lab</code> and practice a mount + umount sequence (use a loop device or a removable drive if available).</li>
+    <li><strong>Permanent mount check:</strong> Validate your <code>/etc/fstab</code> changes without rebooting.</li>
+    <li><strong>View partition UUIDs:</strong> Use <code>blkid</code> to find the exact UUID of all block devices.</li>
+    <li><strong>Check disk health:</strong> List the command to check a disk's SMART status (assuming <code>smartmontools</code> is installed).</li>
+    <li><strong>Check directory sizes:</strong> Find the top 3 largest subdirectories within your home folder using <code>du</code>.</li>
+  </ol>
+</div>
+
+<div class="section-answers">
+  <h2>7. Answers</h2>
+  <pre data-code="# Exercise 1: Identify devices
+lsblk -f
+
+# Exercise 2: Find space issues
+df -h
+
+# Exercise 3: Find inode exhaustion
+df -i
+# High inode usage = too many files (often millions of small files), even if GB space remains.
+
+# Exercise 4: Safe mount (example device may vary)
+sudo mkdir -p /mnt/lab
+sudo mount /dev/sdb1 /mnt/lab
+mount | grep /mnt/lab
+sudo umount /mnt/lab
+
+# Exercise 5: Permanent mount check
+sudo mount -a
+
+# Exercise 6: View partition UUIDs
+sudo blkid
+
+# Exercise 7: Check disk health
+sudo smartctl -a /dev/sda
+
+# Exercise 8: Check directory sizes
+du -sh ~/* | sort -hr | head -n 3"></pre>
+</div>
+</div>
+

@@ -1,0 +1,136 @@
+<h1>1. Navigation Basics</h1>
+<p class="muted">Mastering the filesystem tree, paths, and essential movement commands.</p>
+
+<div class="section-concept">
+  <h2>1. Concept Overview</h2>
+  <p>
+    In Linux, everything starts from the <strong>root directory</strong>, represented by a single forward slash <code>/</code>. Unlike Windows, which has drive letters (C:, D:), Linux has a single unified directory tree. Drives and devices are "mounted" onto directories within this tree.
+  </p>
+  <p>
+    Navigation is the art of moving through this tree efficiently. It relies on understanding <strong>Absolute Paths</strong> (full address from root, e.g., <code>/home/user/docs</code>) vs. <strong>Relative Paths</strong> (directions from where you are, e.g., <code>../docs</code>).
+  </p>
+</div>
+
+<div data-images="navigation" data-title="Navigation Visual Guides" style="margin-bottom: 24px;"></div>
+
+<div class="section-commands">
+  <h2>2. Key Commands</h2>
+  <div class="card">
+    <strong>ls (List)</strong>
+    <p>See what's in a directory.</p>
+    <pre data-code="ls        # Simple list
+ls -l     # Long format (perms, size, date)
+ls -a     # Show hidden files (start with .)
+ls -lh    # Long format with human-readable sizes
+ls -R     # Recursive list (subdirectories too)"></pre>
+  </div>
+  <div class="card">
+    <strong>cd (Change Directory)</strong>
+    <p>Move around the tree.</p>
+    <pre data-code="cd /var/log   # Go to absolute path
+cd ..         # Go up one level
+cd ../..      # Go up two levels
+cd ~          # Go to your home directory
+cd -          # Go to previous directory (back)"></pre>
+  </div>
+  <div class="card">
+    <strong>pwd (Print Working Directory)</strong>
+    <p>Get your bearings.</p>
+    <pre data-code="pwd"></pre>
+  </div>
+  <div class="card">
+    <strong>mkdir (Make Directory)</strong>
+    <p>Create new folders.</p>
+    <pre data-code="mkdir photos
+mkdir -p projects/web/assets  # Create parent dirs if needed"></pre>
+  </div>
+</div>
+
+<div class="section-scenarios">
+  <h2>3. Real-World Scenarios</h2>
+  
+  <h3>Scenario A: "I'm lost in the filesystem"</h3>
+  <p>You've cd'd into a deep directory structure and don't know where you are.</p>
+  <pre data-code="pwd           # Check current path
+ls -F         # List files, appending / to directories
+cd ~          # Emergency eject: go home"></pre>
+
+  <h3>Scenario B: "Organizing a new project"</h3>
+  <p>You need to set up a folder structure for a new website project.</p>
+  <pre data-code="mkdir -p my-site/{css,js,images}  # Brace expansion magic!
+touch my-site/index.html
+tree my-site                      # Visualize the structure"></pre>
+</div>
+
+<div class="section-deep-dive">
+  <h2>4. Deep Dive: The "." and ".."</h2>
+  <p>
+    Every directory contains at least two special entries:
+    <ul>
+      <li><code>.</code> (dot): Represents the <strong>current directory</strong>. Useful for executing scripts in the current folder (<code>./script.sh</code>).</li>
+      <li><code>..</code> (dot-dot): Represents the <strong>parent directory</strong>. Used for relative navigation.</li>
+    </ul>
+    <em>Try <code>ls -la</code> to see them explicitly!</em>
+  </p>
+</div>
+
+<div class="section-pitfalls">
+  <h2>5. Common Pitfalls</h2>
+  <ul>
+    <li><strong>Case Sensitivity:</strong> <code>File.txt</code> and <code>file.txt</code> are different files.</li>
+    <li><strong>Spaces in Names:</strong> Avoid them. If you must, use quotes: <code>cd "My Documents"</code> or escape them: <code>cd My\ Documents</code>.</li>
+    <li><strong>Root Directory vs. Home Directory:</strong> <code>/</code> is the system root. <code>~</code> (or <code>/home/username</code>) is your personal home. Don't mix them up!</li>
+  </ul>
+</div>
+
+<div class="section-exercises">
+  <h2>6. Exercises</h2>
+  <p>Do these in a terminal. They build the habits you’ll need later for logs, networking configs, and troubleshooting.</p>
+  <ol>
+    <li><strong>Absolute vs relative:</strong> From your home directory, navigate to <code>/var/log</code> using an absolute path, then go back home using a relative path.</li>
+    <li><strong>Previous directory:</strong> Jump between two directories (e.g. <code>/etc</code> and <code>/var</code>) using <code>cd -</code>.</li>
+    <li><strong>Create a project tree:</strong> Create <code>lab/{configs,logs,scripts}</code> and confirm the structure.</li>
+    <li><strong>Hidden files:</strong> List hidden files in your home directory and identify which ones are directories.</li>
+    <li><strong>Safety drill:</strong> From anywhere, “panic return” to home, then print your working directory.</li>
+    <li><strong>Parent directory shortcut:</strong> Navigate to <code>/var/log</code>, then jump directly to <code>/var/lib</code> without using an absolute path.</li>
+    <li><strong>Create deep structures:</strong> Create a nested directory <code>a/b/c/d</code> in one command and navigate into it.</li>
+    <li><strong>List directories only:</strong> Use <code>ls</code> to list only the directories in your current path, excluding normal files.</li>
+  </ol>
+</div>
+
+<div class="section-answers">
+  <h2>7. Answers</h2>
+  <pre data-code="# Exercise 1: Absolute vs relative
+cd /var/log
+cd ../home/$USER   # or: cd ~
+
+# Exercise 2: Previous directory
+cd /etc
+cd /var
+cd -               # back to /etc
+cd -               # back to /var
+
+# Exercise 3: Create a project tree
+mkdir -p lab/{configs,logs,scripts}
+ls -R lab
+
+# Exercise 4: Hidden files
+ls -la ~
+# Directories typically show a leading 'd' in the permissions column (e.g. drwxr-xr-x).
+
+# Exercise 5: Safety drill
+cd ~
+pwd
+
+# Exercise 6: Parent directory shortcut
+cd /var/log
+cd ../lib
+
+# Exercise 7: Create deep structures
+mkdir -p a/b/c/d
+cd a/b/c/d
+
+# Exercise 8: List directories only
+ls -d */"></pre>
+</div>
+

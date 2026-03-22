@@ -1,0 +1,121 @@
+<h1>8. Package Management</h1>
+<p class="muted">Installing, updating, and removing software.</p>
+
+<div class="section-concept">
+  <h2>1. Concept Overview</h2>
+  <p>
+    Unlike Windows (downloading .exe files from websites) or macOS (dragging .app to Applications), Linux uses
+    <strong>Package Managers</strong>.
+  </p>
+  <p>
+    Software is stored in centralized <strong>Repositories</strong> (repos). The package manager handles downloading the
+    software AND all its dependencies (libraries it needs to run).
+  </p>
+</div>
+
+<div class="section-commands">
+  <h2>2. Key Commands</h2>
+  <p>Commands vary by distribution. The two big families are Debian/Ubuntu (apt) and RedHat/Fedora (dnf).</p>
+
+  <div class="card">
+    <strong>APT (Debian/Ubuntu)</strong>
+    <pre data-code="sudo apt update        # Refresh package list
+sudo apt install git   # Install a package
+sudo apt remove git    # Remove a package
+sudo apt upgrade       # Upgrade all packages
+apt search python      # Search for a package"></pre>
+  </div>
+  <div class="card">
+    <strong>DNF (Fedora/RHEL)</strong>
+    <pre data-code="sudo dnf install git   # Install
+sudo dnf remove git    # Remove
+sudo dnf update        # Upgrade all
+dnf search python      # Search"></pre>
+  </div>
+</div>
+
+<div class="section-scenarios">
+  <h2>3. Real-World Scenarios</h2>
+
+  <h3>Scenario A: "I need a specific tool"</h3>
+  <p>You need to compile code and are missing <code>make</code>.</p>
+  <pre data-code="sudo apt update
+sudo apt install build-essential  # Installs make, gcc, etc."></pre>
+
+  <h3>Scenario B: "Cleaning up"</h3>
+  <p>You uninstalled a huge app, but it left dependencies behind.</p>
+  <pre data-code="sudo apt autoremove   # Removes unused dependencies"></pre>
+</div>
+
+<div class="section-deep-dive">
+  <h2>4. Deep Dive: Repositories</h2>
+  <p>
+    Your computer doesn't know about every software in the world. It only knows what is in the lists inside
+    <code>/etc/apt/sources.list</code> (or <code>/etc/yum.repos.d/</code>).
+  </p>
+  <p>
+    To install 3rd party software (like VS Code or Chrome), you often need to add their repository URL and GPG key to
+    your system first.
+  </p>
+</div>
+
+<div class="section-pitfalls">
+  <h2>5. Common Pitfalls</h2>
+  <ul>
+    <li><strong>Partial Upgrades:</strong> Don't just run <code>apt upgrade</code> without running
+      <code>apt update</code> first. You need the latest list!</li>
+    <li><strong>"Held" packages:</strong> Sometimes updates are blocked because of dependency conflicts. Read the error
+      message carefully.</li>
+  </ul>
+</div>
+
+<div class="section-exercises">
+  <h2>6. Exercises</h2>
+  <p>Package skills are essential for installing network tools (tcpdump, dig, traceroute) and keeping systems patched.</p>
+  <ol>
+    <li><strong>Search:</strong> Find which package provides <code>dig</code> and install it.</li>
+    <li><strong>Install a troubleshooting toolkit:</strong> Install <code>curl</code>, <code>traceroute</code>, and <code>tcpdump</code>.</li>
+    <li><strong>List installed packages:</strong> Show how to list installed packages and filter for “ssh”.</li>
+    <li><strong>Remove + clean:</strong> Remove a package you installed in this exercise and run autoremove.</li>
+    <li><strong>Check updates:</strong> Refresh package metadata and list upgradable packages.</li>
+    <li><strong>Find package by file:</strong> Find which package installed a specific command (e.g., use <code>dpkg -S</code> on Debian to find what owns <code>/bin/ls</code>).</li>
+    <li><strong>View package details:</strong> Show detailed information (version, size, description) of a specific installed package.</li>
+    <li><strong>Add a repository:</strong> Add an external PPA or repository (conceptually) and update the package list.</li>
+  </ol>
+</div>
+
+<div class="section-answers">
+  <h2>7. Answers</h2>
+  <pre data-code="# Exercise 1: Search (Debian/Ubuntu)
+apt search dnsutils
+sudo apt install dnsutils     # dig is in dnsutils on Debian/Ubuntu
+
+# Exercise 2: Install a troubleshooting toolkit
+sudo apt install -y curl traceroute tcpdump
+
+# Exercise 3: List installed packages
+apt list --installed | grep -i ssh
+
+# Exercise 4: Remove + clean
+sudo apt remove traceroute
+sudo apt autoremove
+
+# Exercise 5: Check updates
+sudo apt update
+apt list --upgradable
+
+# Exercise 6: Find package by file
+dpkg -S $(which ls)     # Debian/Ubuntu
+# rpm -qf $(which ls)   # RHEL/CentOS
+
+# Exercise 7: View package details
+apt show curl           # Debian/Ubuntu
+# dnf info curl         # RHEL/CentOS
+
+# Exercise 8: Add a repository (e.g. adding Ansible PPA on Ubuntu)
+sudo apt install software-properties-common
+sudo apt-add-repository ppa:ansible/ansible
+sudo apt update"></pre>
+</div>
+</div>
+

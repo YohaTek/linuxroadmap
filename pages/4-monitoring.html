@@ -1,0 +1,136 @@
+<h1>4. System / Server Review & Monitoring</h1>
+<p class="muted">Diagnosing system health, resource usage, and logs.</p>
+
+<div class="section-concept">
+  <h2>1. Concept Overview</h2>
+  <p>
+    System monitoring is about answering three questions: "Is it up?", "Is it slow?", and "Why?".
+  </p>
+  <p>
+    Linux provides a wealth of metrics exposed through the <code>/proc</code> filesystem and various tools. You need to
+    monitor <strong>CPU</strong> (processing power), <strong>Memory</strong> (RAM), <strong>Disk I/O</strong>
+    (read/write speed), and <strong>Network</strong> (bandwidth/latency).
+  </p>
+</div>
+
+<div class="section-commands">
+  <h2>2. Key Commands</h2>
+  <div class="card">
+    <strong>top / htop</strong>
+    <p>Real-time process viewer.</p>
+    <pre data-code="top       # Standard viewer
+htop      # Interactive, colorful viewer (if installed)
+# Key shortcuts in top:
+# 'P' - Sort by CPU
+# 'M' - Sort by Memory
+# 'k' - Kill a process"></pre>
+  </div>
+  <div class="card">
+    <strong>free</strong>
+    <p>Check memory usage.</p>
+    <pre data-code="free -h   # Human readable (GB/MB)
+# Look at 'available' column, not just 'free'.
+# Linux caches files in RAM, which is good!"></pre>
+  </div>
+  <div class="card">
+    <strong>df & du</strong>
+    <p>Disk space usage.</p>
+    <pre data-code="df -h          # Disk Free (Filesystem usage)
+du -sh .       # Disk Usage (Size of current dir)
+du -sh *       # Size of each item in current dir"></pre>
+  </div>
+  <div class="card">
+    <strong>journalctl</strong>
+    <p>View system logs (systemd).</p>
+    <pre data-code="journalctl -xe        # Jump to end, show details
+journalctl -u nginx   # Logs for specific unit
+journalctl -f         # Follow live logs"></pre>
+  </div>
+</div>
+
+<div class="section-scenarios">
+  <h2>3. Real-World Scenarios</h2>
+
+  <h3>Scenario A: "The server is sluggish"</h3>
+  <p>Check the <strong>Load Average</strong>.</p>
+  <pre data-code="uptime
+# Output: 10:00:00 up 10 days, load average: 0.50, 0.80, 1.20
+# If load > number of CPUs, processes are waiting for resources."></pre>
+
+  <h3>Scenario B: "Disk is full"</h3>
+  <p>Find the culprit.</p>
+  <pre data-code="df -h                  # Check which partition is full
+cd /var                # Go to suspect directory
+du -h --max-depth=1    # Find largest subdirectories"></pre>
+</div>
+
+<div class="section-deep-dive">
+  <h2>4. Deep Dive: Load Average</h2>
+  <p>
+    Load average is NOT just CPU usage. It is the number of processes that are either <strong>using the CPU</strong> OR
+    <strong>waiting for disk I/O</strong>.
+  </p>
+  <p>
+    A load of 1.00 on a single-core system means the CPU is 100% busy. On a quad-core system, 1.00 means 25% busy.
+    <br>High load + Low CPU usage usually means <strong>Disk I/O bottleneck</strong>.
+  </p>
+</div>
+
+<div class="section-pitfalls">
+  <h2>5. Common Pitfalls</h2>
+  <ul>
+    <li><strong>Misinterpreting "Free" RAM:</strong> Linux uses unused RAM to cache files. <code>free</code> might show
+      very little "free" memory, but if "available" is high, you are fine.</li>
+    <li><strong>Tail -f on huge files:</strong> Tailing a multi-gigabyte log file can slow down your terminal. Use
+      <code>tail -n 100</code> first.</li>
+  </ul>
+</div>
+
+<div class="section-exercises">
+  <h2>6. Exercises</h2>
+  <p>Practice the “ops loop”: observe → narrow down → confirm with logs. Include network signals where possible.</p>
+  <ol>
+    <li><strong>Identify CPU pressure:</strong> Use <code>uptime</code> and <code>top</code> to decide whether a system is CPU-bound.</li>
+    <li><strong>Identify memory pressure:</strong> Use <code>free -h</code> and explain what “available” means.</li>
+    <li><strong>Find disk hogs:</strong> In <code>/var</code>, list the top 5 largest directories.</li>
+    <li><strong>Find a failing service log:</strong> Pick a service (e.g. <code>ssh</code> or <code>nginx</code>) and view the last 50 log lines.</li>
+    <li><strong>Network symptom check:</strong> On a busy server, list established TCP connections and count them.</li>
+    <li><strong>Track memory usage over time:</strong> Run a command that outputs memory statistics continuously every 2 seconds.</li>
+    <li><strong>Find specific logs:</strong> Use <code>journalctl</code> to filter logs specifically related to the SSH daemon from today only.</li>
+    <li><strong>Check open files:</strong> Identify which processes are actively using or keeping a specific directory open (using <code>lsof</code>).</li>
+  </ol>
+</div>
+
+<div class="section-answers">
+  <h2>7. Answers</h2>
+  <pre data-code="# Exercise 1: Identify CPU pressure
+uptime
+top               # or: htop
+# Rule of thumb: if load average is consistently > CPU core count, you have CPU and/or I/O contention.
+
+# Exercise 2: Identify memory pressure
+free -h
+# 'available' estimates memory available for starting new apps without swapping.
+
+# Exercise 3: Find disk hogs
+cd /var
+sudo du -h --max-depth=1 2>/dev/null | sort -hr | head -n 5
+
+# Exercise 4: Find a failing service log
+sudo journalctl -u ssh -n 50 --no-pager
+# or: sudo journalctl -u nginx -n 50 --no-pager
+
+# Exercise 5: Network symptom check
+ss -tan state established | wc -l
+# For a per-remote summary:
+ss -tan state established | awk 'NR>1 {print $5}' | cut -d: -f1 | sort | uniq -c | sort -nr | head
+
+# Exercise 6: Track memory usage over time
+watch -n 2 free -h
+
+# Exercise 7: Find specific logs
+journalctl -u ssh.service --since today
+
+# Exercise 8: Check open files
+sudo lsof +D /var/log"></pre>
+</div>

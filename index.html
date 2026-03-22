@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Linux Roadmap</title>
+    <meta name="description" content="An interactive and comprehensive learning roadmap for Linux.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+    <div id="app">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">Linux Roadmap</div>
+                <button id="sidebar-close" aria-label="Close menu" class="sidebar-close-btn" type="button"
+                    onclick="closeSidebarMenu()">✕</button>
+            </div>
+            <nav id="nav-list"></nav>
+            <div class="sidebar-footer">
+                <a href="mailto:sponsor@example.com" class="ad-sidebar" style="display:block; text-decoration:none;">
+                    <span class="ad-badge">Sponsored</span>
+                    <div class="ad-content" style="color:#cbd5e1;">Your logo here to support the project. Contact us.
+                    </div>
+                </a>
+                <button id="reset-progress" class="btn btn-muted">Reset Progress</button>
+            </div>
+        </aside>
+        <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+        <main class="main">
+            <header class="topbar">
+                <button id="sidebar-toggle" aria-label="Toggle navigation" class="icon-btn topbar-menu-btn">☰</button>
+                <div class="search">
+                    <input id="search-input" type="search" placeholder="Search topics or commands..." />
+                </div>
+                
+                <a href="#/99" class="ad-topbar" title="Sponsor the Linux Roadmap" style="margin-left: auto;">
+                    <span class="ad-badge" style="margin-bottom: 0;">AD</span>
+                    <span class="ad-text" style="color:var(--muted);">Hosted by <strong>SponsorName</strong></span>
+                </a>
+
+                <button id="terminal-toggle" class="btn btn-muted" title="Open Interactive Terminal">Terminal</button>
+                <div class="progress">
+                    <div class="progress-bar"><span id="progress-bar-fill"></span></div>
+                    <span id="progress-text">0% complete</span>
+                </div>
+                <button id="auth-toggle" class="btn" style="margin-left:8px;" title="Sign In or Register">Login</button>
+            </header>
+
+            <section id="content" class="content" aria-live="polite"></section>
+
+            <aside id="terminal-pane" class="terminal-pane" aria-label="Embedded Terminal" aria-hidden="true">
+                <div class="terminal-header">
+                    <div style="font-family: var(--font-display); font-weight:600; font-size: 16px;">Interactive
+                        Terminal</div>
+                    <button id="terminal-close" class="icon-btn" aria-label="Close terminal">✕</button>
+                </div>
+                <!-- Terminal Body injects JS Emulator -->
+                <div class="terminal-body" id="terminal-body">
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/db.js"></script>
+    <!-- Auth Modal -->
+    <dialog id="auth-modal" style="padding:32px; background:var(--bg); color:var(--text); border:1px solid var(--border); border-radius:12px; margin:auto; width:100%; max-width:400px; box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+      <h2 style="margin-top:0; font-family:var(--font-display);">Welcome</h2>
+      <p style="color:var(--muted); font-size:14px; margin-bottom:24px;">Sign in to sync your progress to the cloud.</p>
+      <form id="auth-form" style="display:flex; flex-direction:column; gap:16px;">
+        <input type="email" id="auth-email" placeholder="Email address" required style="padding:10px 14px; border-radius:6px; border:1px solid var(--border); background:#303030; color:white; outline:none; font-family:var(--font-sans);">
+        <input type="password" id="auth-password" placeholder="Password" required style="padding:10px 14px; border-radius:6px; border:1px solid var(--border); background:#303030; color:white; outline:none; font-family:var(--font-sans);">
+        <div style="display:flex; gap:12px; margin-top:8px;">
+          <button type="submit" class="btn" id="btn-login" style="flex:1;">Log In</button>
+          <button type="button" class="btn btn-muted" id="btn-register" style="flex:1;">Register</button>
+        </div>
+        <div id="auth-error" style="color:var(--danger); font-size:14px; display:none;"></div>
+      </form>
+      <button onclick="document.getElementById('auth-modal').close()" class="btn btn-muted" style="margin-top:16px; width:100%;">Close</button>
+    </dialog>
+
+    <script src="assets/js/components.js"></script>
+    <script src="assets/js/content.js"></script>
+    <script src="assets/js/slides.js"></script>
+    <script src="assets/js/router.js"></script>
+    <script src="assets/js/app.js"></script>
+    <noscript>
+        This site requires JavaScript for routing and interactivity. Please enable JavaScript.
+    </noscript>
+</body>
+
+</html>

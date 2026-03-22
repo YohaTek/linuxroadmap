@@ -1,0 +1,101 @@
+<h1>14. Continue Learning / Related Roadmaps</h1>
+<p class="muted">Choose focus areas and go deeper with hands-on practice.</p>
+<p>
+Linux is a launchpad. After covering the fundamentals, you can specialize in operations, development, security, or data. This final chapter maps typical next steps and concrete project ideas so you can keep building momentum. The best way to learn is to ship small projects, observe them in production, and iterate.
+</p>
+
+<h2>DevOps & SRE</h2>
+<p>Automate delivery, define infrastructure as code, and build reliable systems.</p>
+<div class="card"><strong>DevOps & SRE</strong><pre data-code="Learn CI/CD (GitHub Actions, GitLab CI)
+IaC: Terraform, Ansible
+Observability: Prometheus, Grafana"></pre></div>
+
+
+<h2>Backend</h2>
+<p>Design services, secure deployments, and operate stateful systems at scale.</p>
+<div class="card"><strong>Backend</strong><pre data-code="Linux services, networking, security
+Databases, backups, replication
+Performance profiling"></pre></div>
+
+
+<h2>Containers & Orchestration</h2>
+<p>Package, ship, and run workloads portably across environments.</p>
+<div class="card"><strong>Containers & Orchestration</strong><pre data-code="Docker, Compose, Buildx
+Kubernetes (kubectl, deployments, services)
+Helm charts"></pre></div>
+
+<details>
+  <summary>Suggested projects</summary>
+  <ul>
+    <li>Self-host a static website with Nginx + systemd</li>
+    <li>Set up a monitoring stack (Prometheus + Grafana)</li>
+    <li>Write backup/restore scripts and schedule via cron</li>
+  </ul>
+</details>
+
+<!-- checklist removed -->
+
+<h2>Exercises</h2>
+<p>Pick one track and do a small, shippable project. Each exercise has a concrete “done” definition.</p>
+<ol>
+  <li><strong>DevOps mini-pipeline:</strong> Put this roadmap site in a Git repo and create a CI job that runs a simple check (e.g. validate HTML files exist) on every push.</li>
+  <li><strong>Network troubleshooting toolkit:</strong> Install <code>dnsutils</code>/<code>bind-tools</code>, <code>traceroute</code>, and <code>tcpdump</code>, then write a one-command “triage” script that prints IP, route, DNS, and listening ports.</li>
+  <li><strong>Self-hosting:</strong> Serve this site with Nginx and a systemd service. Make it start at boot and verify logs with <code>journalctl</code>.</li>
+  <li><strong>Containers:</strong> Containerize a simple static server for this site and expose it on port 8080.</li>
+  <li><strong>Observability:</strong> Install Prometheus + Grafana (local is fine) and create a dashboard that shows CPU, memory, and network I/O for your machine.</li>
+  <li><strong>Automated Provisioning (Capstone):</strong> Write a bash script <code>setup-server.sh</code> that installs necessary packages (like nginx), configures a basic firewall to allow HTTP traffic, creates a simple index.html, and ensures the web service starts on boot.</li>
+</ol>
+
+<h2>Answers (Example “Done” Checks)</h2>
+<pre data-code="# Exercise 1: DevOps mini-pipeline
+# 'Done' when: pushing to GitHub triggers a check that passes.
+# Suggested: .github/workflows/check.yml validates HTML/CSS syntax
+
+# Exercise 2: Network troubleshooting toolkit
+# 'Done' when: ./triage.sh prints ip a, ip r, resolv.conf nameservers, and ss -tulpn
+#!/usr/bin/env bash
+echo '=== IP Addresses ==='
+ip a
+echo
+echo '=== Routes ==='
+ip r
+echo
+echo '=== DNS Servers ==='
+grep nameserver /etc/resolv.conf 2>/dev/null || echo 'No /etc/resolv.conf'
+echo
+echo '=== Listening Ports ==='
+sudo ss -tulpn
+
+# Exercise 3: Self-hosting
+# 'Done' when:
+# - systemctl status nginx is active
+# - curl -I http://localhost returns 200/304
+# - journalctl -u nginx shows access and no fatal errors
+# Implementation:
+sudo systemctl enable --now nginx
+curl -I http://localhost
+sudo journalctl -u nginx --tail 20
+
+# Exercise 4: Containers
+# 'Done' when:
+# - docker run -d -p 8080:80 -v /path/to/roadmap:/usr/share/nginx/html nginx
+# - visiting http://localhost:8080 loads the site
+docker run -d --name roadmap-web -p 8080:80 -v /path/to/linux-roadmap:/usr/share/nginx/html nginx
+
+# Exercise 5: Observability
+# 'Done' when:
+# - Grafana dashboard shows CPU/mem/net panels updating live
+# - You can correlate spikes with a workload (e.g. ping flood or file copy)
+# Setup example:
+docker run -d --name prometheus prom/prometheus
+docker run -d --name grafana -p 3000:3000 grafana/grafana
+# Then add Prometheus data source and create dashboards
+
+# Exercise 6: Automated Provisioning (Capstone)
+# 'Done' when: running the script on a fresh VM results in a working web server.
+#!/usr/bin/env bash
+# set -euo pipefail
+# apt update && apt install -y nginx ufw
+# ufw allow 'Nginx HTTP'
+# echo "<h1>Welcome to Linux Roadmap</h1>" > /var/www/html/index.html
+# systemctl enable --now nginx"></pre>
