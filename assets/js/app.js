@@ -49,12 +49,42 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (e.detail.user) authModal?.close();
     });
 
-    document.getElementById('btn-register')?.addEventListener('click', async (e) => {
+    document.getElementById('btn-register')?.addEventListener('click', (e) => {
         e.preventDefault();
-        const email = document.getElementById('auth-email').value;
-        const pass = document.getElementById('auth-password').value;
-        const res = await window.DB.signUp(email, pass);
-        if (res?.error) { errorDiv.textContent = res.error.message; errorDiv.style.display = 'block'; }
+        authModal?.close();
+        location.hash = '#/100';
+    });
+
+    // Delegated listener for the full registration page form
+    document.addEventListener('submit', async (e) => {
+        if (e.target.id === 'full-register-form') {
+            e.preventDefault();
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-password').value;
+            const fullname = document.getElementById('reg-fullname').value;
+            const username = document.getElementById('reg-username').value;
+            const errorDiv = document.getElementById('reg-error');
+            const successDiv = document.getElementById('reg-success');
+
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            const { data, error } = await window.DB.signUp(email, pass, { 
+                full_name: fullname, 
+                username: username 
+            });
+
+            if (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.style.display = 'block';
+            } else {
+                successDiv.textContent = "Registration successful! " + 
+                    (data?.user?.identities?.length === 0 ? "You're already registered." : "Please check your email if confirmation is enabled.");
+                successDiv.style.display = 'block';
+                // Wait and redirect to login/home
+                setTimeout(() => { location.hash = '#/1'; }, 3000);
+            }
+        }
     });
 
     authForm?.addEventListener('submit', async (e) => {

@@ -88,9 +88,28 @@ window.DB = (() => {
     return await client.auth.signInWithPassword({ email, password });
   };
 
-  const signUp = async (email, password) => {
+  const signUp = async (email, password, metadata = {}) => {
     if(!isConfigured) return {error: {message: "Supabase not configured."}};
-    return await client.auth.signUp({ email, password });
+    const { data, error } = await client.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        data: metadata
+      }
+    });
+    
+    // If registration is successful and we have metadata, ensure the profile is created 
+    // (Though usually a Supabase trigger handles this, we can do it manually if needed)
+    if (!error && data?.user && metadata.full_name) {
+       await client.from('profiles').upsert({
+         id: data.user.id,
+         full_name: metadata.full_name,
+         username: metadata.username,
+         updated_at: new Date()
+       });
+    }
+
+    return { data, error };
   };
 
   const signOut = async () => {

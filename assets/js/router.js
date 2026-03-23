@@ -16,6 +16,8 @@ window.RoadmapRouter = (() => {
     { id: 12, title: 'Shell Scripting', file: 'pages/12-scripting.html', icon: 'fa-code', module: 'Module 4: Advanced Engineering' },
     { id: 13, title: 'Containerization', file: 'pages/13-containers.html', icon: 'fa-box', module: 'Module 4: Advanced Engineering' },
     { id: 14, title: 'Continue Learning', file: 'pages/14-continue.html', icon: 'fa-graduation-cap', module: 'Module 4: Advanced Engineering' },
+    { id: 99, title: 'Sponsor Us', file: 'pages/sponsor.html', icon: 'fa-handshake', module: 'Support Us' },
+    { id: 100, title: 'Register', file: 'pages/register.html', icon: 'fa-user-plus', module: 'Account' }
   ];
 
   const getRouteFromHash = () => {
