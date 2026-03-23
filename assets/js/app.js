@@ -46,7 +46,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     
     document.addEventListener('auth:change', (e) => {
       if (authToggle) authToggle.textContent = e.detail.user ? 'Sign Out' : 'Login';
-      if (e.detail.user) authModal?.close();
+      if (e.detail.user) {
+        authModal?.close();
+        if (location.hash === '#/0' || !location.hash) location.hash = '#/1';
+        else RoadmapRouter.init(); // Re-check current route
+      } else {
+        location.hash = '#/0';
+      }
     });
 
     document.getElementById('btn-register')?.addEventListener('click', (e) => {

@@ -17,16 +17,33 @@ window.RoadmapRouter = (() => {
     { id: 13, title: 'Containerization', file: 'pages/13-containers.html', icon: 'fa-box', module: 'Module 4: Advanced Engineering' },
     { id: 14, title: 'Continue Learning', file: 'pages/14-continue.html', icon: 'fa-graduation-cap', module: 'Module 4: Advanced Engineering' },
     { id: 99, title: 'Sponsor Us', file: 'pages/sponsor.html', icon: 'fa-handshake', module: 'Support Us' },
-    { id: 100, title: 'Register', file: 'pages/register.html', icon: 'fa-user-plus', module: 'Account' }
+    { id: 100, title: 'Register', file: 'pages/register.html', icon: 'fa-user-plus', module: 'Account' },
+    { id: 0, title: 'Welcome', file: 'pages/landing.html', icon: 'fa-home', module: 'Welcome' }
   ];
 
   const getRouteFromHash = () => {
     const m = location.hash.match(/#\/(\d+)/);
-    const id = m ? parseInt(m[1], 10) : 1;
+    const id = m ? parseInt(m[1], 10) : (window.DB?.getUser() ? 1 : 0);
     return routes.find(r => r.id === id) || routes[0];
   };
 
   const loadContent = async (route) => {
+    // Auth Gate: Redirect to landing (ID 0) if not logged in and trying to access course content
+    const isPublic = [0, 99, 100].includes(route.id);
+    const user = window.DB?.getUser();
+    
+    if (!isPublic && !user) {
+      location.hash = '#/0';
+      return;
+    }
+
+    // Toggle Gated Layout
+    if (route.id === 0) {
+      document.body.classList.add('auth-gated');
+    } else {
+      document.body.classList.remove('auth-gated');
+    }
+
     const content = document.getElementById('content');
     content.innerHTML = `<div class="muted">Loading...</div>`;
     // If opened via file:// most browsers block fetch of local files
