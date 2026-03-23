@@ -15,26 +15,28 @@
 
 <div class="section-commands">
   <h2>2. Key Commands</h2>
-  <div class="card">
-    <strong>systemctl (Control)</strong>
-    <p>Manage service state.</p>
-    <pre data-code="sudo systemctl start nginx    # Start now
+  <div class="grid">
+    <div class="card">
+      <strong>systemctl (Control)</strong>
+      <p>Manage service state.</p>
+      <pre data-code="sudo systemctl start nginx    # Start now
 sudo systemctl stop nginx     # Stop now
 sudo systemctl restart nginx  # Stop then Start
 sudo systemctl reload nginx   # Reload config without stopping"></pre>
-  </div>
-  <div class="card">
-    <strong>systemctl (Enable/Disable)</strong>
-    <p>Manage boot behavior.</p>
-    <pre data-code="sudo systemctl enable nginx   # Start automatically at boot
+    </div>
+    <div class="card">
+      <strong>systemctl (Enable/Disable)</strong>
+      <p>Manage boot behavior.</p>
+      <pre data-code="sudo systemctl enable nginx   # Start automatically at boot
 sudo systemctl disable nginx  # Do NOT start at boot
 systemctl is-enabled nginx    # Check current setting"></pre>
-  </div>
-  <div class="card">
-    <strong>systemctl (Status)</strong>
-    <p>Check health.</p>
-    <pre data-code="systemctl status nginx        # Show status, PID, and recent logs
+    </div>
+    <div class="card">
+      <strong>systemctl (Status)</strong>
+      <p>Check health.</p>
+      <pre data-code="systemctl status nginx        # Show status, PID, and recent logs
 systemctl list-units --type=service  # List all running services"></pre>
+    </div>
   </div>
 </div>
 

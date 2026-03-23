@@ -19,34 +19,36 @@
 <div class="section-commands">
   <h2>2. Key Commands</h2>
   
-  <div class="card">
-    <strong>ip (The new standard)</strong>
-    <p>Replace ifconfig/route.</p>
-    <pre data-code="ip a              # Show Addresses (ip addr)
+  <div class="grid">
+    <div class="card">
+      <strong>ip (The new standard)</strong>
+      <p>Replace ifconfig/route.</p>
+      <pre data-code="ip a              # Show Addresses (ip addr)
 ip r              # Show Routes (ip route)
 ip n              # Show Neighbors (ARP table)"></pre>
-  </div>
-  
-  <div class="card">
-    <strong>ss (Socket Stats)</strong>
-    <p>See who is listening.</p>
-    <pre data-code="ss -tulpn         # Show TCP/UDP listening ports
+    </div>
+    
+    <div class="card">
+      <strong>ss (Socket Stats)</strong>
+      <p>See who is listening.</p>
+      <pre data-code="ss -tulpn         # Show TCP/UDP listening ports
 # -t: TCP, -u: UDP, -l: Listening
 # -p: Process name, -n: Numeric ports"></pre>
-  </div>
-  
-  <div class="card">
-    <strong>ping & traceroute</strong>
-    <p>Test connectivity.</p>
-    <pre data-code="ping -c 4 8.8.8.8      # Check internet connection
+    </div>
+    
+    <div class="card">
+      <strong>ping & traceroute</strong>
+      <p>Test connectivity.</p>
+      <pre data-code="ping -c 4 8.8.8.8      # Check internet connection
 traceroute google.com  # Trace path to host"></pre>
-  </div>
-  
-  <div class="card">
-    <strong>curl</strong>
-    <p>Transfer data.</p>
-    <pre data-code="curl -I google.com     # Fetch headers only
+    </div>
+    
+    <div class="card">
+      <strong>curl</strong>
+      <p>Transfer data.</p>
+      <pre data-code="curl -I google.com     # Fetch headers only
 curl -O url/file.zip   # Download file"></pre>
+    </div>
   </div>
 </div>
 

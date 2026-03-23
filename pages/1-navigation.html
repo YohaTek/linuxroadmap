@@ -11,38 +11,57 @@
   </p>
 </div>
 
-<div data-images="navigation" data-title="Navigation Visual Guides" style="margin-bottom: 24px;"></div>
+<div class="grid" style="margin-bottom: 32px;">
+  <div class="card">
+    <i class="fas fa-sitemap" style="color:var(--brand); font-size: 24px; margin-bottom: 12px; display:block;"></i>
+    <strong>Filesystem Tree</strong>
+    <p class="muted" style="font-size:13px;">Visualize the structure.</p>
+    <pre data-code="tree -L 1 /"></pre>
+  </div>
+  <div class="card">
+    <i class="fas fa-route" style="color:var(--accent); font-size: 24px; margin-bottom: 12px; display:block;"></i>
+    <strong>Path Logic</strong>
+    <p class="muted" style="font-size:13px;">Absolute vs Relative.</p>
+    <pre data-code="cd /etc/network
+cd ../default"></pre>
+  </div>
+  <div class="card">
+    <i class="fas fa-bolt" style="color:#f5c211; font-size: 24px; margin-bottom: 12px; display:block;"></i>
+    <strong>Quick Jumps</strong>
+    <p class="muted" style="font-size:13px;">Home and Previous.</p>
+    <pre data-code="cd ~
+cd -"></pre>
+  </div>
+</div>
 
 <div class="section-commands">
   <h2>2. Key Commands</h2>
-  <div class="card">
-    <strong>ls (List)</strong>
-    <p>See what's in a directory.</p>
-    <pre data-code="ls        # Simple list
-ls -l     # Long format (perms, size, date)
-ls -a     # Show hidden files (start with .)
-ls -lh    # Long format with human-readable sizes
-ls -R     # Recursive list (subdirectories too)"></pre>
-  </div>
-  <div class="card">
-    <strong>cd (Change Directory)</strong>
-    <p>Move around the tree.</p>
-    <pre data-code="cd /var/log   # Go to absolute path
-cd ..         # Go up one level
-cd ../..      # Go up two levels
-cd ~          # Go to your home directory
-cd -          # Go to previous directory (back)"></pre>
-  </div>
-  <div class="card">
-    <strong>pwd (Print Working Directory)</strong>
-    <p>Get your bearings.</p>
-    <pre data-code="pwd"></pre>
-  </div>
-  <div class="card">
-    <strong>mkdir (Make Directory)</strong>
-    <p>Create new folders.</p>
-    <pre data-code="mkdir photos
-mkdir -p projects/web/assets  # Create parent dirs if needed"></pre>
+  <div class="grid">
+    <div class="card">
+      <strong>ls (List)</strong>
+      <p>See what's in a directory.</p>
+      <pre data-code="ls        # Simple list
+ls -l     # Long format
+ls -a     # Show hidden
+ls -lh    # Human readable
+ls -R     # Recursive"></pre>
+    </div>
+    <div class="card">
+      <strong>cd (Change Directory)</strong>
+      <p>Move around the tree.</p>
+      <pre data-code="cd /var/log   # Absolute
+cd ..         # Up
+cd ../..      # Up twice
+cd ~          # Home
+cd -          # Back"></pre>
+    </div>
+    <div class="card">
+      <strong>pwd & mkdir</strong>
+      <p>Identify & Create.</p>
+      <pre data-code="pwd           # Where am I?
+mkdir docs    # New folder
+mkdir -p a/b  # Deep folder"></pre>
+    </div>
   </div>
 </div>
 

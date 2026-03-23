@@ -14,29 +14,33 @@
 
 <div class="section-commands">
   <h2>2. Key Syntax</h2>
-  <div class="card">
-    <strong>Variables</strong>
-    <pre data-code="NAME='Alice'          # No spaces around =
-echo " Hello $NAME" # Use quotes echo 'Hello $NAME' # Single quotes=Literal (No variable expansion)"></pre>
-  </div>
-  <div class="card">
-    <strong>Conditionals (if)</strong>
-    <pre data-code="if [ -f 'file.txt' ]; then
-echo 'File exists'
+  <div class="grid">
+    <div class="card">
+      <strong>Variables</strong>
+      <pre data-code="NAME='Alice'          # No spaces around =
+echo &quot;Hello $NAME&quot; # Use quotes
+echo 'Hello $NAME' # Single quotes=Literal"></pre>
+    </div>
+    <div class="card">
+      <strong>Conditionals (if)</strong>
+      <pre data-code="if [ -f 'file.txt' ]; then
+  echo 'File exists'
 else
-echo 'Missing'
+  echo 'Missing'
 fi"></pre>
-  </div>
-  <div class="card">
-    <strong>Loops (for)</strong>
-    <pre data-code="for file in *.jpg; do
-echo " Processing $file" done"></pre>
-  </div>
-  <div class="card">
-    <strong>Arguments</strong>
-    <pre data-code="$1, $2, $3   # Positional arguments
+    </div>
+    <div class="card">
+      <strong>Loops (for)</strong>
+      <pre data-code="for file in *.jpg; do
+  echo &quot;Processing $file&quot; 
+done"></pre>
+    </div>
+    <div class="card">
+      <strong>Arguments</strong>
+      <pre data-code="$1, $2, $3   # Positional arguments
 $#           # Number of arguments
 $@           # All arguments (as list)"></pre>
+    </div>
   </div>
 </div>
 

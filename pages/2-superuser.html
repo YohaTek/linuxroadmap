@@ -16,34 +16,36 @@
 
 <div class="section-commands">
   <h2>2. Key Commands</h2>
-  <div class="card">
-    <strong>sudo (Execute as Root)</strong>
-    <p>Run a command with elevated privileges.</p>
-    <pre data-code="sudo apt update   # Run update as root
+  <div class="grid">
+    <div class="card">
+      <strong>sudo (Execute as Root)</strong>
+      <p>Run a command with elevated privileges.</p>
+      <pre data-code="sudo apt update   # Run update as root
 sudo -i           # Start a root shell (be careful!)
 sudo !!           # 'I forgot sudo' (runs last command with sudo)"></pre>
-  </div>
-  <div class="card">
-    <strong>chmod (Change Mode)</strong>
-    <p>Change file permissions (Read, Write, Execute).</p>
-    <pre data-code="chmod +x script.sh       # Make executable
+    </div>
+    <div class="card">
+      <strong>chmod (Change Mode)</strong>
+      <p>Change file permissions (Read, Write, Execute).</p>
+      <pre data-code="chmod +x script.sh       # Make executable
 chmod 644 file.txt       # Standard file perms (rw-r--r--)
 chmod 755 app            # Standard executable perms (rwxr-xr-x)
 chmod -R 755 dir/        # Recursive"></pre>
-  </div>
-  <div class="card">
-    <strong>chown (Change Owner)</strong>
-    <p>Change who owns a file.</p>
-    <pre data-code="chown user file.txt          # Change owner
+    </div>
+    <div class="card">
+      <strong>chown (Change Owner)</strong>
+      <p>Change who owns a file.</p>
+      <pre data-code="chown user file.txt          # Change owner
 chown user:group file.txt    # Change owner and group
 chown -R user:group dir/     # Recursive"></pre>
-  </div>
-  <div class="card">
-    <strong>tar (Tape Archive)</strong>
-    <p>Compress and archive files.</p>
-    <pre data-code="tar -czf archive.tar.gz dir/  # Create (Compress)
+    </div>
+    <div class="card">
+      <strong>tar (Tape Archive)</strong>
+      <p>Compress and archive files.</p>
+      <pre data-code="tar -czf archive.tar.gz dir/  # Create (Compress)
 tar -xzf archive.tar.gz       # Extract (Uncompress)
 tar -tf archive.tar.gz        # List contents"></pre>
+    </div>
   </div>
 </div>
 

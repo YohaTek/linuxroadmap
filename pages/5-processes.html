@@ -15,28 +15,30 @@
 
 <div class="section-commands">
   <h2>2. Key Commands</h2>
-  <div class="card">
-    <strong>ps (Process Status)</strong>
-    <p>Snapshot of current processes.</p>
-    <pre data-code="ps aux            # List ALL processes
+  <div class="grid">
+    <div class="card">
+      <strong>ps (Process Status)</strong>
+      <p>Snapshot of current processes.</p>
+      <pre data-code="ps aux            # List ALL processes
 ps -ef            # Standard syntax
 ps aux | grep app # Find specific process"></pre>
-  </div>
-  <div class="card">
-    <strong>kill & killall</strong>
-    <p>Send signals to processes.</p>
-    <pre data-code="kill 1234         # Terminate PID 1234 (SIGTERM)
+    </div>
+    <div class="card">
+      <strong>kill & killall</strong>
+      <p>Send signals to processes.</p>
+      <pre data-code="kill 1234         # Terminate PID 1234 (SIGTERM)
 kill -9 1234      # Force Kill PID 1234 (SIGKILL)
 killall nginx     # Kill all processes named 'nginx'"></pre>
-  </div>
-  <div class="card">
-    <strong>Jobs (fg/bg)</strong>
-    <p>Manage shell jobs.</p>
-    <pre data-code="command &         # Run in background
+    </div>
+    <div class="card">
+      <strong>Jobs (fg/bg)</strong>
+      <p>Manage shell jobs.</p>
+      <pre data-code="command &         # Run in background
 jobs              # List background jobs
 fg %1             # Bring job 1 to foreground
 bg %1             # Resume job 1 in background
 Ctrl+Z            # Pause current foreground job"></pre>
+    </div>
   </div>
 </div>
 

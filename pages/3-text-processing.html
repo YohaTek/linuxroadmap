@@ -16,34 +16,36 @@
 
 <div class="section-commands">
   <h2>2. Key Commands</h2>
-  <div class="card">
-    <strong>grep (Global Regular Expression Print)</strong>
-    <p>Search for text patterns.</p>
-    <pre data-code="grep 'error' file.log     # Find lines with 'error'
+  <div class="grid">
+    <div class="card">
+      <strong>grep (Global Regular Expression Print)</strong>
+      <p>Search for text patterns.</p>
+      <pre data-code="grep 'error' file.log     # Find lines with 'error'
 grep -r 'config' .        # Recursive search in current dir
 grep -i 'user' file       # Case insensitive
 grep -v 'debug' file      # Invert match (show lines WITHOUT 'debug')"></pre>
-  </div>
-  <div class="card">
-    <strong>cat / head / tail</strong>
-    <p>Read files.</p>
-    <pre data-code="cat file.txt              # Print whole file
+    </div>
+    <div class="card">
+      <strong>cat / head / tail</strong>
+      <p>Read files.</p>
+      <pre data-code="cat file.txt              # Print whole file
 head -n 5 file.txt        # First 5 lines
 tail -n 5 file.txt        # Last 5 lines
 tail -f access.log        # Follow file (live updates)"></pre>
-  </div>
-  <div class="card">
-    <strong>sort & uniq</strong>
-    <p>Organize data.</p>
-    <pre data-code="sort names.txt            # Sort alphabetically
+    </div>
+    <div class="card">
+      <strong>sort & uniq</strong>
+      <p>Organize data.</p>
+      <pre data-code="sort names.txt            # Sort alphabetically
 sort -n numbers.txt       # Sort numerically
 uniq                      # Remove adjacent duplicates
 uniq -c                   # Count duplicates"></pre>
-  </div>
-  <div class="card">
-    <strong>wc (Word Count)</strong>
-    <p>Count lines, words, bytes.</p>
-    <pre data-code="wc -l file.txt            # Count lines"></pre>
+    </div>
+    <div class="card">
+      <strong>wc (Word Count)</strong>
+      <p>Count lines, words, bytes.</p>
+      <pre data-code="wc -l file.txt            # Count lines"></pre>
+    </div>
   </div>
 </div>
 

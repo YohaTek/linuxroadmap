@@ -19,30 +19,32 @@
 
 <div class="section-commands">
   <h2>2. Key Commands</h2>
-  <div class="card">
-    <strong>useradd / userdel</strong>
-    <p>Create/Delete users.</p>
-    <pre data-code="sudo useradd -m alice     # Create user 'alice' with home dir
+  <div class="grid">
+    <div class="card">
+      <strong>useradd / userdel</strong>
+      <p>Create/Delete users.</p>
+      <pre data-code="sudo useradd -m alice     # Create user 'alice' with home dir
 sudo passwd alice         # Set password for alice
 sudo userdel -r alice     # Delete alice and her home dir"></pre>
-  </div>
-  <div class="card">
-    <strong>usermod</strong>
-    <p>Modify user accounts.</p>
-    <pre data-code="sudo usermod -aG sudo alice  # Add alice to 'sudo' group
+    </div>
+    <div class="card">
+      <strong>usermod</strong>
+      <p>Modify user accounts.</p>
+      <pre data-code="sudo usermod -aG sudo alice  # Add alice to 'sudo' group
 sudo usermod -s /bin/bash alice # Change shell to bash"></pre>
-  </div>
-  <div class="card">
-    <strong>groupadd / gpasswd</strong>
-    <p>Manage groups.</p>
-    <pre data-code="sudo groupadd developers
+    </div>
+    <div class="card">
+      <strong>groupadd / gpasswd</strong>
+      <p>Manage groups.</p>
+      <pre data-code="sudo groupadd developers
 sudo gpasswd -a alice developers # Add user to group"></pre>
-  </div>
-  <div class="card">
-    <strong>id / whoami</strong>
-    <p>Check identity.</p>
-    <pre data-code="id alice       # Show UID, GID, and groups for alice
+    </div>
+    <div class="card">
+      <strong>id / whoami</strong>
+      <p>Check identity.</p>
+      <pre data-code="id alice       # Show UID, GID, and groups for alice
 whoami         # Show current username"></pre>
+    </div>
   </div>
 </div>
 

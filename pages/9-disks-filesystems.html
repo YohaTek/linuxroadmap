@@ -15,27 +15,29 @@
 
 <div class="section-commands">
   <h2>2. Key Commands</h2>
-  <div class="card">
-    <strong>lsblk (List Block Devices)</strong>
-    <p>Visualize disk structure.</p>
-    <pre data-code="lsblk             # Tree view of disks/partitions
+  <div class="grid">
+    <div class="card">
+      <strong>lsblk (List Block Devices)</strong>
+      <p>Visualize disk structure.</p>
+      <pre data-code="lsblk             # Tree view of disks/partitions
 lsblk -f          # Show filesystem types (ext4, swap)"></pre>
-  </div>
-  <div class="card">
-    <strong>mount / umount</strong>
-    <p>Attach/Detach filesystems.</p>
-    <pre data-code="sudo mount /dev/sdb1 /mnt/usb  # Mount USB to folder
+    </div>
+    <div class="card">
+      <strong>mount / umount</strong>
+      <p>Attach/Detach filesystems.</p>
+      <pre data-code="sudo mount /dev/sdb1 /mnt/usb  # Mount USB to folder
 sudo umount /mnt/usb           # Safely remove"></pre>
-  </div>
-  <div class="card">
-    <strong>df (Disk Free)</strong>
-    <p>Check available space.</p>
-    <pre data-code="df -h             # Human readable sizes"></pre>
-  </div>
-  <div class="card">
-    <strong>du (Disk Usage)</strong>
-    <p>Check directory size.</p>
-    <pre data-code="du -sh /var/log   # Size of log folder"></pre>
+    </div>
+    <div class="card">
+      <strong>df (Disk Free)</strong>
+      <p>Check available space.</p>
+      <pre data-code="df -h             # Human readable sizes"></pre>
+    </div>
+    <div class="card">
+      <strong>du (Disk Usage)</strong>
+      <p>Check directory size.</p>
+      <pre data-code="du -sh /var/log   # Size of log folder"></pre>
+    </div>
   </div>
 </div>
 

@@ -15,24 +15,26 @@
 
 <div class="section-commands">
   <h2>2. Key Commands</h2>
-  <div class="card">
-    <strong>Running</strong>
-    <pre data-code="docker run hello-world    # Run a test container
+  <div class="grid">
+    <div class="card">
+      <strong>Running</strong>
+      <pre data-code="docker run hello-world    # Run a test container
 docker run -d -p 80:80 nginx  # Run nginx in background (-d) on port 80
 docker ps                 # List running containers
 docker ps -a              # List ALL containers (including stopped)"></pre>
-  </div>
-  <div class="card">
-    <strong>Managing</strong>
-    <pre data-code="docker stop <id>          # Stop a container
-docker rm <id>            # Remove a container
+    </div>
+    <div class="card">
+      <strong>Managing</strong>
+      <pre data-code="docker stop &lt;id&gt;          # Stop a container
+docker rm &lt;id&gt;            # Remove a container
 docker images             # List downloaded images
-docker rmi <image>        # Remove an image"></pre>
-  </div>
-  <div class="card">
-    <strong>Debugging</strong>
-    <pre data-code="docker logs <id>          # View container output
-docker exec -it <id> bash # Open a shell INSIDE the container"></pre>
+docker rmi &lt;image&gt;        # Remove an image"></pre>
+    </div>
+    <div class="card">
+      <strong>Debugging</strong>
+      <pre data-code="docker logs &lt;id&gt;          # View container output
+docker exec -it &lt;id&gt; bash # Open a shell INSIDE the container"></pre>
+    </div>
   </div>
 </div>
 

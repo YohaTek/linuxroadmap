@@ -15,36 +15,38 @@
 
 <div class="section-commands">
   <h2>2. Key Commands</h2>
-  <div class="card">
-    <strong>top / htop</strong>
-    <p>Real-time process viewer.</p>
-    <pre data-code="top       # Standard viewer
-htop      # Interactive, colorful viewer (if installed)
-# Key shortcuts in top:
-# 'P' - Sort by CPU
-# 'M' - Sort by Memory
-# 'k' - Kill a process"></pre>
-  </div>
-  <div class="card">
-    <strong>free</strong>
-    <p>Check memory usage.</p>
-    <pre data-code="free -h   # Human readable (GB/MB)
-# Look at 'available' column, not just 'free'.
-# Linux caches files in RAM, which is good!"></pre>
-  </div>
-  <div class="card">
-    <strong>df & du</strong>
-    <p>Disk space usage.</p>
-    <pre data-code="df -h          # Disk Free (Filesystem usage)
-du -sh .       # Disk Usage (Size of current dir)
-du -sh *       # Size of each item in current dir"></pre>
-  </div>
-  <div class="card">
-    <strong>journalctl</strong>
-    <p>View system logs (systemd).</p>
-    <pre data-code="journalctl -xe        # Jump to end, show details
-journalctl -u nginx   # Logs for specific unit
-journalctl -f         # Follow live logs"></pre>
+  <div class="grid">
+    <div class="card">
+      <strong>top / htop</strong>
+      <p>Real-time process viewer.</p>
+      <pre data-code="top       # Standard viewer
+  htop      # Interactive, colorful viewer (if installed)
+  # Key shortcuts in top:
+  # 'P' - Sort by CPU
+  # 'M' - Sort by Memory
+  # 'k' - Kill a process"></pre>
+    </div>
+    <div class="card">
+      <strong>free</strong>
+      <p>Check memory usage.</p>
+      <pre data-code="free -h   # Human readable (GB/MB)
+  # Look at 'available' column, not just 'free'.
+  # Linux caches files in RAM, which is good!"></pre>
+    </div>
+    <div class="card">
+      <strong>df & du</strong>
+      <p>Disk space usage.</p>
+      <pre data-code="df -h          # Disk Free (Filesystem usage)
+  du -sh .       # Disk Usage (Size of current dir)
+  du -sh *       # Size of each item in current dir"></pre>
+    </div>
+    <div class="card">
+      <strong>journalctl</strong>
+      <p>View system logs (systemd).</p>
+      <pre data-code="journalctl -xe        # Jump to end, show details
+  journalctl -u nginx   # Logs for specific unit
+  journalctl -f         # Follow live logs"></pre>
+    </div>
   </div>
 </div>
 

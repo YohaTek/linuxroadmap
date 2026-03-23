@@ -16,26 +16,28 @@
 
 <div class="section-commands">
   <h2>2. Key Commands</h2>
-  <div class="card">
-    <strong>journalctl</strong>
-    <p>Query the systemd journal.</p>
-    <pre data-code="journalctl -b           # Logs from current boot
+  <div class="grid">
+    <div class="card">
+      <strong>journalctl</strong>
+      <p>Query the systemd journal.</p>
+      <pre data-code="journalctl -b           # Logs from current boot
 journalctl -b -1        # Logs from PREVIOUS boot
 journalctl -p err       # Show only ERRORs
 journalctl -k           # Show Kernel logs (dmesg)"></pre>
-  </div>
-  <div class="card">
-    <strong>dmesg</strong>
-    <p>Kernel ring buffer.</p>
-    <pre data-code="dmesg | less            # View kernel messages
+    </div>
+    <div class="card">
+      <strong>dmesg</strong>
+      <p>Kernel ring buffer.</p>
+      <pre data-code="dmesg | less            # View kernel messages
 dmesg | grep usb        # Filter for USB events
 dmesg -w                # Follow new messages"></pre>
-  </div>
-  <div class="card">
-    <strong>systemd-analyze</strong>
-    <p>Boot performance.</p>
-    <pre data-code="systemd-analyze         # Show total boot time
+    </div>
+    <div class="card">
+      <strong>systemd-analyze</strong>
+      <p>Boot performance.</p>
+      <pre data-code="systemd-analyze         # Show total boot time
 systemd-analyze blame   # Show which services took longest"></pre>
+    </div>
   </div>
 </div>
 
