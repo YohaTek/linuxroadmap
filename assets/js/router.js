@@ -351,14 +351,80 @@ window.RoadmapRouter = (() => {
     document.addEventListener('progress:update', updateGlobalProgress);
     updateGlobalProgress();
 
-    // rudimentary search filter on sidebar
+    // ─── Enhanced Search ───
     const search = document.getElementById('search-input');
-    search?.addEventListener('input', () => {
-      const q = search.value.toLowerCase();
-      document.querySelectorAll('#nav-list a').forEach(a => {
-        a.style.display = a.textContent.toLowerCase().includes(q) ? '' : 'none';
+    if (search) {
+      // Create results dropdown
+      const dropdown = document.createElement('div');
+      dropdown.id = 'search-results';
+      dropdown.style.cssText = 'position:absolute;top:100%;left:0;right:0;background:var(--panel);border:1px solid var(--border);border-radius:0 0 10px 10px;max-height:320px;overflow-y:auto;z-index:100;display:none;box-shadow:0 8px 24px rgba(0,0,0,0.4);';
+      search.parentElement.style.position = 'relative';
+      search.parentElement.appendChild(dropdown);
+
+      search.addEventListener('input', () => {
+        const q = search.value.trim().toLowerCase();
+        dropdown.innerHTML = '';
+
+        if (!q) { dropdown.style.display = 'none'; return; }
+
+        const seen = new Set();
+        const hits = [];
+
+        // 1 – Match route titles
+        routes.forEach(r => {
+          if ([0, 99, 100].includes(r.id)) return; // skip utility routes
+          if (r.title.toLowerCase().includes(q)) {
+            if (!seen.has(r.id)) { seen.add(r.id); hits.push({ id: r.id, title: r.title, match: 'topic' }); }
+          }
+        });
+
+        // 2 – Match CommandIndex entries
+        if (window.CommandIndex) {
+          Object.keys(window.CommandIndex).forEach(cmd => {
+            if (cmd.includes(q)) {
+              const mid = window.CommandIndex[cmd];
+              const route = routes.find(r => r.id === mid);
+              if (route && !seen.has(mid)) {
+                seen.add(mid);
+                hits.push({ id: mid, title: route.title, match: cmd });
+              }
+            }
+          });
+        }
+
+        if (hits.length === 0) {
+          dropdown.innerHTML = '<div style="padding:12px 16px;color:var(--muted);font-size:13px;">No results found.</div>';
+          dropdown.style.display = 'block';
+          return;
+        }
+
+        hits.forEach(h => {
+          const item = document.createElement('a');
+          item.href = '#/' + h.id;
+          item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 16px;text-decoration:none;color:var(--text);border-bottom:1px solid var(--border);transition:background 0.15s;';
+          item.innerHTML = `
+            <span style="font-weight:600;">${h.id}. ${h.title}</span>
+            <span style="margin-left:auto;font-size:12px;color:var(--muted);background:rgba(255,255,255,0.06);padding:2px 8px;border-radius:6px;">${h.match === 'topic' ? 'topic' : h.match}</span>
+          `;
+          item.addEventListener('mouseenter', () => { item.style.background = 'rgba(255,255,255,0.06)'; });
+          item.addEventListener('mouseleave', () => { item.style.background = ''; });
+          item.addEventListener('click', () => { dropdown.style.display = 'none'; search.value = ''; });
+          dropdown.appendChild(item);
+        });
+
+        dropdown.style.display = 'block';
       });
-    });
+
+      // Close dropdown on outside click
+      document.addEventListener('click', (e) => {
+        if (!search.parentElement.contains(e.target)) dropdown.style.display = 'none';
+      });
+
+      // Close dropdown on Escape
+      search.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') { dropdown.style.display = 'none'; search.value = ''; }
+      });
+    }
   };
 
   return { init, routes };

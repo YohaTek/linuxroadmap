@@ -100,3 +100,81 @@ window.QuizBank = {
   ],
 };
 
+// Command index: maps Linux commands/keywords → module ID
+// Used by the search box to find the right module for a command.
+window.CommandIndex = {
+  // 1 – Navigation Basics
+  'ls':1,'cd':1,'pwd':1,'mkdir':1,'tree':1,'rmdir':1,
+  'absolute path':1,'relative path':1,'filesystem':1,
+
+  // 2 – Super User & File Operations
+  'sudo':2,'su':2,'chmod':2,'chown':2,'chgrp':2,
+  'cp':2,'mv':2,'rm':2,'touch':2,'ln':2,'tar':2,'gzip':2,'zip':2,
+  'find':2,'locate':2,'file':2,'stat':2,'umask':2,
+  'permissions':2,'symlink':2,'archive':2,
+
+  // 3 – Text Processing & Streams
+  'cat':3,'less':3,'more':3,'head':3,'tail':3,
+  'grep':3,'awk':3,'sed':3,'cut':3,'sort':3,'uniq':3,
+  'wc':3,'tr':3,'tee':3,'xargs':3,'diff':3,'nl':3,
+  'pipe':3,'redirect':3,'stdin':3,'stdout':3,'stderr':3,
+
+  // 4 – System Monitoring
+  'top':4,'htop':4,'free':4,'df':4,'du':4,'uptime':4,'vmstat':4,
+  'iostat':4,'sar':4,'watch':4,'last':4,'who':4,'w':4,
+  'monitoring':4,'memory':4,'cpu':4,'load average':4,
+
+  // 5 – Process Management
+  'ps':5,'kill':5,'killall':5,'pkill':5,'pgrep':5,
+  'jobs':5,'fg':5,'bg':5,'nice':5,'renice':5,
+  'nohup':5,'lsof':5,'pstree':5,'strace':5,
+  'process':5,'signal':5,'sigterm':5,'sigkill':5,
+
+  // 6 – Users & Groups
+  'useradd':6,'userdel':6,'usermod':6,'passwd':6,
+  'groupadd':6,'groupdel':6,'groups':6,'id':6,'whoami':6,
+  'adduser':6,'deluser':6,'getent':6,'setfacl':6,'getfacl':6,
+  'shadow':6,'/etc/passwd':6,'acl':6,
+
+  // 7 – Services
+  'systemctl':7,'journalctl':7,'service':7,'systemd':7,
+  'enable':7,'disable':7,'start':7,'stop':7,'restart':7,
+  'unit file':7,'timer':7,
+
+  // 8 – Package Management
+  'apt':8,'apt-get':8,'dpkg':8,'dnf':8,'yum':8,
+  'pacman':8,'zypper':8,'snap':8,'flatpak':8,'pip':8,
+  'install':8,'upgrade':8,'package':8,'repository':8,
+
+  // 9 – Disks & Filesystems
+  'fdisk':9,'parted':9,'lsblk':9,'blkid':9,'mount':9,'umount':9,
+  'mkfs':9,'fsck':9,'fstab':9,'lvm':9,'pvcreate':9,'vgcreate':9,'lvcreate':9,
+  'swap':9,'mkswap':9,'swapon':9,'partition':9,'ext4':9,'btrfs':9,'xfs':9,
+
+  // 10 – Boot & Logs
+  'grub':10,'dmesg':10,'systemd-analyze':10,
+  'initramfs':10,'update-grub':10,
+  'boot':10,'log':10,'kernel':10,'runlevel':10,'init':10,
+
+  // 11 – Networking
+  'ip':11,'ifconfig':11,'ping':11,'traceroute':11,'netstat':11,
+  'ss':11,'nmap':11,'curl':11,'wget':11,'ssh':11,'scp':11,'rsync':11,
+  'ufw':11,'iptables':11,'nft':11,'dig':11,'nslookup':11,'host':11,'nc':11,
+  'dns':11,'firewall':11,'route':11,'tcp':11,'udp':11,
+
+  // 12 – Shell Scripting
+  'bash':12,'sh':12,'zsh':12,'shebang':12,'cron':12,'crontab':12,
+  'variable':12,'function':12,'loop':12,'if':12,'case':12,
+  'array':12,'regex':12,'heredoc':12,'trap':12,'exit code':12,
+  'script':12,'automation':12,'pipefail':12,
+
+  // 13 – Containerization
+  'docker':13,'docker-compose':13,'compose':13,'dockerfile':13,
+  'podman':13,'kubectl':13,'kubernetes':13,'k8s':13,'helm':13,
+  'container':13,'image':13,'registry':13,'volume':13,
+
+  // 14 – Continue Learning
+  'terraform':14,'ansible':14,'ci/cd':14,'devops':14,
+  'prometheus':14,'grafana':14,'sre':14,'infrastructure':14,
+};
+
