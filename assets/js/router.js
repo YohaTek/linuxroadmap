@@ -71,9 +71,11 @@ window.RoadmapRouter = (() => {
       const html = await res.text();
       content.innerHTML = html;
       enhanceInteractiveBlocks(content);
-      // Initialize slides with quiz bank
-      const questions = QuizBank[route.id] || [];
-      Slides.init({ container: content, sectionId: route.id, title: route.title, questions });
+      // Initialize slides with quiz bank — skip for landing page (single-page layout)
+      if (route.id !== 0) {
+        const questions = QuizBank[route.id] || [];
+        Slides.init({ container: content, sectionId: route.id, title: route.title, questions });
+      }
       markActive(route.id);
       document.title = `${route.id}. ${route.title} — Linux Roadmap`;
       let metaDesc = document.querySelector('meta[name="description"]');

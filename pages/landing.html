@@ -1,45 +1,76 @@
-<div class="landing-page">
-  <section class="hero-section" style="background: linear-gradient(rgba(36,36,36,0.7), rgba(36,36,36,0.9)), url('assets/images/gnome-hero.png'); background-size: cover; background-position: center; padding: 80px 24px; text-align: center; border-bottom: 1px solid var(--border);">
-    <div style="max-width: 800px; margin: 0 auto;">
-      <h1 style="font-size: 56px; font-family: var(--font-display); margin-bottom: 16px; letter-spacing: -1.5px;">Master the Linux Ecosystem</h1>
-      <p style="font-size: 20px; color: var(--muted); margin-bottom: 40px; line-height: 1.6;">A modern, interactive roadmap designed for the next generation of systems engineers. Learn, practice, and sync your progress globally.</p>
-      
-      <div style="display:flex; justify-content:center; gap:16px;">
-        <button onclick="document.getElementById('auth-modal').showModal()" class="btn" style="width:auto; padding: 12px 32px; font-size: 18px;">Sign In to Start</button>
-        <a href="#/100" class="btn btn-muted" style="width:auto; padding: 12px 32px; font-size: 18px; text-decoration:none;">Create Free Account</a>
+<div class="landing-page" style="background: linear-gradient(170deg, rgba(26,27,38,0.85), rgba(45,27,61,0.92)), url('assets/images/gnome-landing-bg.png'); background-size: cover; background-position: center; background-attachment: fixed; min-height: 100vh;">
+
+  <!-- ─── Hero ─── -->
+  <section style="padding: 100px 24px 60px; text-align: center;">
+    <div style="max-width: 820px; margin: 0 auto;">
+      <div style="display:inline-block; background: rgba(79,209,197,0.12); padding: 6px 18px; border-radius: 99px; font-size: 13px; color: #4fd1c5; margin-bottom: 24px; border: 1px solid rgba(79,209,197,0.2);">
+        🐧 Open Source &bull; Free Forever
+      </div>
+      <h1 style="font-size: 58px; font-family: var(--font-display); margin-bottom: 18px; letter-spacing: -1.5px; background: linear-gradient(135deg, #fff 0%, #a78bfa 50%, #4fd1c5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+        Master the Linux Ecosystem
+      </h1>
+      <p style="font-size: 19px; color: rgba(255,255,255,0.7); margin-bottom: 44px; line-height: 1.7; max-width: 640px; margin-left: auto; margin-right: auto;">
+        A modern, interactive roadmap designed for the next generation of systems engineers. Learn, practice, and sync your progress globally.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+        <button onclick="document.getElementById('auth-modal').showModal()" class="btn" style="width:auto; padding: 14px 36px; font-size: 17px; border-radius: 12px; box-shadow: 0 4px 20px rgba(59,130,246,0.4);">
+          Sign In to Start
+        </button>
+        <a href="#/100" class="btn btn-muted" style="width:auto; padding: 14px 36px; font-size: 17px; text-decoration:none; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12);">
+          Create Free Account
+        </a>
       </div>
     </div>
   </section>
 
-  <section class="overview-section" style="padding: 80px 24px; max-width: 1200px; margin: 0 auto;">
-    <h2 style="text-align:center; margin-bottom: 48px; font-family: var(--font-display); font-size: 32px;">The Learning Path</h2>
+  <!-- ─── Stats Strip ─── -->
+  <section style="padding: 20px 24px 40px; text-align: center;">
+    <div style="display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; opacity: 0.7; font-size: 14px; color: rgba(255,255,255,0.6);">
+      <span><strong style="color:#4fd1c5; font-size: 22px;">14</strong><br>Modules</span>
+      <span><strong style="color:#b48ead; font-size: 22px;">150+</strong><br>Commands</span>
+      <span><strong style="color:#f5c211; font-size: 22px;">70+</strong><br>Quiz Questions</span>
+      <span><strong style="color:#ff7800; font-size: 22px;">∞</strong><br>Practice</span>
+    </div>
+  </section>
+
+  <!-- ─── Learning Path ─── -->
+  <section style="padding: 60px 24px; max-width: 1100px; margin: 0 auto;">
+    <h2 style="text-align: center; margin-bottom: 48px; font-family: var(--font-display); font-size: 30px; color: #fff;">The Learning Path</h2>
     <div class="grid">
-      <div class="card">
-        <i class="fas fa-folder-open" style="font-size: 32px; color: var(--brand); margin-bottom: 16px;"></i>
+      <div class="card" style="border: 1px solid rgba(79,209,197,0.15); background: rgba(255,255,255,0.03);">
+        <div style="font-size: 28px; margin-bottom: 12px;">📂</div>
         <h3>The Essentials</h3>
-        <p class="muted">Navigation basics, superuser operations, and text processing filesystems. The core foundation.</p>
+        <p class="muted">Navigation basics, superuser operations, and text processing. The core foundation every engineer needs.</p>
+        <div style="margin-top:12px; font-size:12px; color:var(--muted);">Modules 1 – 3</div>
       </div>
-      <div class="card">
-        <i class="fas fa-chart-line" style="font-size: 32px; color: var(--accent); margin-bottom: 16px;"></i>
+      <div class="card" style="border: 1px solid rgba(180,139,173,0.15); background: rgba(255,255,255,0.03);">
+        <div style="font-size: 28px; margin-bottom: 12px;">📊</div>
         <h3>System Diagnostics</h3>
         <p class="muted">Process management, system monitoring, and user/group administration. Master your environment.</p>
+        <div style="margin-top:12px; font-size:12px; color:var(--muted);">Modules 4 – 6</div>
       </div>
-      <div class="card">
-        <i class="fas fa-server" style="font-size: 32px; color: #f5c211; margin-bottom: 16px;"></i>
+      <div class="card" style="border: 1px solid rgba(245,194,17,0.15); background: rgba(255,255,255,0.03);">
+        <div style="font-size: 28px; margin-bottom: 12px;">⚙️</div>
         <h3>Core Infrastructure</h3>
         <p class="muted">Service management, package control, and advanced disk operations. Build robust systems.</p>
+        <div style="margin-top:12px; font-size:12px; color:var(--muted);">Modules 7 – 9</div>
       </div>
-      <div class="card">
-        <i class="fas fa-network-wired" style="font-size: 32px; color: #ff7800; margin-bottom: 16px;"></i>
+      <div class="card" style="border: 1px solid rgba(255,120,0,0.15); background: rgba(255,255,255,0.03);">
+        <div style="font-size: 28px; margin-bottom: 12px;">🌐</div>
         <h3>Advanced Engineering</h3>
         <p class="muted">Networking, shell scripting, and containerization. Command the modern cloud-native stack.</p>
+        <div style="margin-top:12px; font-size:12px; color:var(--muted);">Modules 10 – 14</div>
       </div>
     </div>
   </section>
 
-  <section class="cta-section" style="padding: 100px 24px; text-align:center; background: var(--panel); border-top: 1px solid var(--border);">
-    <h2 style="font-family: var(--font-display); margin-bottom: 16px;">Official GNOME Adwaita Interface</h2>
-    <p style="color: var(--muted); margin-bottom: 32px;">Experience a learning platform that feels like a native desktop application.</p>
-    <a href="#/100" class="btn" style="width:auto; padding: 14px 40px;">Join Yohatek Roadmap Today</a>
+  <!-- ─── CTA ─── -->
+  <section style="padding: 80px 24px 100px; text-align: center;">
+    <h2 style="font-family: var(--font-display); margin-bottom: 14px; color: #fff; font-size: 28px;">Built with the GNOME Adwaita Philosophy</h2>
+    <p style="color: rgba(255,255,255,0.55); margin-bottom: 36px; max-width: 500px; margin-left: auto; margin-right: auto;">A learning platform that feels like a native desktop application. Dark mode, keyboard navigation, and cloud sync.</p>
+    <a href="#/100" class="btn" style="width:auto; padding: 14px 44px; border-radius: 12px; font-size: 17px; box-shadow: 0 4px 20px rgba(59,130,246,0.35);">
+      Join the Roadmap Today
+    </a>
   </section>
+
 </div>
