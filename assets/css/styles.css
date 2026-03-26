@@ -462,7 +462,9 @@ body.sidebar-collapsed .brand, body.sidebar-collapsed .sidebar-footer { display:
 body.auth-gated .sidebar,
 body.auth-gated .topbar .progress,
 body.auth-gated .topbar #terminal-toggle,
-body.auth-gated .ad-topbar {
+body.auth-gated .ad-topbar,
+body.auth-gated .search,
+body.auth-gated #auth-toggle {
   display: none !important;
 }
 
