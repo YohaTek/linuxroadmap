@@ -67,19 +67,49 @@ uniq -c                   # Count duplicates"></pre>
 </div>
 
 <div class="section-deep-dive">
-  <h2>4. Deep Dive: Standard Streams</h2>
+  <h2>4. I/O Redirection & Standard Streams</h2>
   <p>
-    Every process has 3 data streams connected to it:
+    In Linux, every process has 3 special data streams connected to it by default. Mastering how to move data between these streams is the key to command-line efficiency.
   </p>
   <ul>
-    <li><strong>stdin (0):</strong> Standard Input (usually keyboard or pipe).</li>
-    <li><strong>stdout (1):</strong> Standard Output (usually screen or pipe).</li>
-    <li><strong>stderr (2):</strong> Standard Error (usually screen, separate from stdout).</li>
+    <li><strong>stdin (0):</strong> Standard Input (data flowing INTO a command, usually from keyboard or pipe).</li>
+    <li><strong>stdout (1):</strong> Standard Output (data flowing OUT of a command, usually to the screen).</li>
+    <li><strong>stderr (2):</strong> Standard Error (error messages, separate from stdout).</li>
   </ul>
-  <p>
-    You can redirect them independently:
-    <br><code>command > output.txt 2> errors.txt</code>
-  </p>
+
+  <h3>Common Redirection Operators</h3>
+  <div class="grid">
+    <div class="card">
+      <strong>> (Overwrite)</strong>
+      <p>Redirect stdout to a file (creates if new, overwrites if exists).</p>
+      <pre data-code="ls /etc > files.txt       # Save directory list to files.txt"></pre>
+    </div>
+    <div class="card">
+      <strong>>> (Append)</strong>
+      <p>Redirect stdout to a file without erasing current content.</p>
+      <pre data-code="echo 'Log entry' >> app.log  # Add a line to the end of app.log"></pre>
+    </div>
+    <div class="card">
+      <strong>< (Input)</strong>
+      <p>Feed a file's content INTO a command as stdin.</p>
+      <pre data-code="wc -l < data.csv          # Count lines using file content as input"></pre>
+    </div>
+    <div class="card">
+      <strong>2> (Error)</strong>
+      <p>Redirect ONLY error messages to a separate file.</p>
+      <pre data-code="find / -name 'ssh' 2> errors.txt  # Find files, but hide 'Permission Denied' errors"></pre>
+    </div>
+    <div class="card">
+      <strong>&> (Both)</strong>
+      <p>Redirect both stdout and stderr to the same destination.</p>
+      <pre data-code="setup-script &> install.log  # Capture ALL output and errors to a log"></pre>
+    </div>
+    <div class="card">
+      <strong>| (Pipe)</strong>
+      <p>The most powerful tool: Connect stdout of Command A to stdin of Command B.</p>
+      <pre data-code="cat logs.txt | grep 'critical'  # Chain commands for instant analysis"></pre>
+    </div>
+  </div>
 </div>
 
 <div class="section-awk">
@@ -132,45 +162,42 @@ END {for (p in count) printf &quot;%8d %s\n&quot;, count[p], p}' | sort -nr | he
 
 <div class="section-exercises">
   <h2>7. Exercises</h2>
-  <p>These focus on the text you actually handle in network operations: logs, routing tables, and socket output.</p>
+  <p>Practice these in a real terminal. Focus on the data flow: where is it coming from, and where is it going?</p>
   <ol>
-    <li><strong>Top destination IPs:</strong> Given an access log where the first field is the client IP, print the top 10 IPs by hit count.</li>
-    <li><strong>Extract DNS servers:</strong> From <code>/etc/resolv.conf</code>, print only <code>nameserver</code> IPs.</li>
-    <li><strong>Filter routes:</strong> From <code>ip r</code>, print only default routes and show the gateway interface.</li>
-    <li><strong>Find noisy ports:</strong> From <code>ss -tan</code>, print the top 5 local destination ports by connection count.</li>
-    <li><strong>Combine stdout/stderr:</strong> Run a command that fails (e.g. <code>ls /nope</code>) and redirect both stdout and stderr into one file.</li>
-    <li><strong>Extract unique users:</strong> Print a sorted, unique list of usernames from <code>/etc/passwd</code> (which uses `:` as a separator delimiter).</li>
-    <li><strong>Count matching lines:</strong> Count exactly how many times the word "error" appears in a log file, regardless of case.</li>
-    <li><strong>Search history:</strong> Use <code>history</code> and <code>grep</code> to find the last time you used the <code>tar</code> command in your session.</li>
+    <li><strong>Save command output:</strong> Print the date and time, and save it to a new file <code>now.txt</code>.</li>
+    <li><strong>Append to a file:</strong> Add your username to the end of <code>now.txt</code> without deleting the date.</li>
+    <li><strong>Filter and count:</strong> Count how many files in <code>/etc</code> have names containing "conf".</li>
+    <li><strong>Hide errors:</strong> Try to list a file that doesn't exist (e.g., <code>ls /secret</code>) and redirect only the error to <code>error.log</code>.</li>
+    <li><strong>Extract unique users:</strong> Print a sorted, unique list of usernames from <code>/etc/passwd</code> (uses <code>:</code> as a delimiter).</li>
+    <li><strong>Top destination IPs:</strong> Given an access log where the first field is the client IP, print the top 5 IPs by hit count.</li>
+    <li><strong>Extract DNS servers:</strong> From <code>/etc/resolv.conf</code>, print only the IPs of <code>nameserver</code> entries.</li>
+    <li><strong>Combined flow:</strong> Run a search for "root" in <code>/etc/passwd</code>, sort the results, and save them to <code>root_entries.txt</code>.</li>
   </ol>
 </div>
 
 <div class="section-answers">
   <h2>8. Answers</h2>
-  <pre data-code="# Exercise 1: Top destination IPs
-awk '{print $1}' access.log | sort | uniq -c | sort -nr | head -n 10
+  <pre data-code="# Exercise 1: Save command output
+date > now.txt              # Redirect stdout (overwrite)
 
-# Exercise 2: Extract DNS servers
+# Exercise 2: Append to a file
+whoami >> now.txt           # Redirect stdout (append)
+
+# Exercise 3: Filter and count
+ls /etc | grep 'conf' | wc -l
+
+# Exercise 4: Hide errors
+ls /secret 2> error.log     # Redirect stderr (channel 2)
+
+# Exercise 5: Extract unique users
+awk -F':' '{print $1}' /etc/passwd | sort -u
+
+# Exercise 6: Top destination IPs
+awk '{print $1}' access.log | sort | uniq -c | sort -nr | head -n 5
+
+# Exercise 7: Extract DNS servers
 awk '$1 == &quot;nameserver&quot; {print $2}' /etc/resolv.conf
 
-# Exercise 3: Filter routes
-ip r | awk '$1 == &quot;default&quot; {print &quot;via=&quot;$3, &quot;dev=&quot;$5}'
-
-# Exercise 4: Find noisy ports
-ss -tan | awk 'NR&gt;1 {split($4,a,&quot;:&quot;); p=a[length(a)]; c[p]++} END {for (p in c) print c[p], p}' | sort -nr | head -n 5
-
-# Exercise 5: Combine stdout/stderr
-ls /nope > out.txt 2>&1
-# or: ls /nope &> out.txt
-
-# Exercise 6: Extract unique users
-awk -F':' '{print $1}' /etc/passwd | sort
-
-# Exercise 7: Count matching lines
-# Suppose file is app.log
-grep -i -c "error" app.log
-
-# Exercise 8: Search history
-history | grep "tar"></pre>
+# Exercise 8: Combined flow
+grep 'root' /etc/passwd | sort > root_entries.txt"></pre>
 </div>
-

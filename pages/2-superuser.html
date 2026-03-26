@@ -35,16 +35,16 @@ chmod -R 755 dir/        # Recursive"></pre>
     <div class="card">
       <strong>chown (Change Owner)</strong>
       <p>Change who owns a file.</p>
-      <pre data-code="chown user file.txt          # Change owner
-chown user:group file.txt    # Change owner and group
-chown -R user:group dir/     # Recursive"></pre>
+      <pre data-code="chown user file.txt          # Change owner to 'user'
+chown user:group file.txt    # Change owner and primary group
+chown -R user:group dir/     # Update owner/group for whole directory"></pre>
     </div>
     <div class="card">
       <strong>tar (Tape Archive)</strong>
       <p>Compress and archive files.</p>
-      <pre data-code="tar -czf archive.tar.gz dir/  # Create (Compress)
-tar -xzf archive.tar.gz       # Extract (Uncompress)
-tar -tf archive.tar.gz        # List contents"></pre>
+      <pre data-code="tar -czf archive.tar.gz dir/  # Create a compressed gzip archive
+tar -xzf archive.tar.gz       # Extract an archive to current dir
+tar -tf archive.tar.gz        # List contents without extracting"></pre>
     </div>
   </div>
 </div>
