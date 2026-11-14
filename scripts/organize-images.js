@@ -28,7 +28,7 @@ function suggestNewName(filename, index) {
 
 // Generate mapping file for manual review
 function generateMapping() {
-  const imagesDir = path.join(__dirname, 'images');
+  const imagesDir = path.join(__dirname, '..', 'images');
   const files = fs.readdirSync(imagesDir).filter(f => f.match(/\.(jpg|jpeg)$/i));
   
   const mapping = files.map((file, index) => ({
@@ -38,7 +38,7 @@ function generateMapping() {
     description: 'Linux learning image - needs manual categorization'
   }));
   
-  fs.writeFileSync('image-mapping.json', JSON.stringify(mapping, null, 2));
+  fs.writeFileSync(path.join(__dirname, 'image-mapping.json'), JSON.stringify(mapping, null, 2));
   console.log(`Generated mapping for ${files.length} images`);
   console.log('Review image-mapping.json and update topic/description fields');
 }

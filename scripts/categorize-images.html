@@ -82,7 +82,7 @@
                     const existingData = imageData.find(d => d.original === item.original);
                     
                     card.innerHTML = `
-                        <img src="images/${item.original}" alt="Linux learning image" onerror="this.style.display='none'">
+                        <img src="../images/${item.original}" alt="Linux learning image" onerror="this.style.display='none'">
                         <div class="image-info">
                             <div><strong>Original:</strong> ${item.original}</div>
                             <div><strong>Suggested:</strong> ${item.suggested}</div>

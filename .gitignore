@@ -1,0 +1,30 @@
+# OS / editor noise
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+desktop.ini
+*.swp
+*~
+.idea/
+.vscode/
+
+# Logs and temporary output
+*.log
+*.tmp
+tmp/
+scratch/
+
+# Node tooling (organize-images.js is a plain Node script)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Python bytecode (remove_grid script)
+__pycache__/
+*.py[cod]
+
+# Local environment / secrets
+.env
+.env.*
+!.env.example
